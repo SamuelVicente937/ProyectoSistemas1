@@ -1,73 +1,107 @@
-# React + TypeScript + Vite
+# Sistema de Formularios - Univalle
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema de login y gestión de formularios para la Universidad del Valle.
 
-Currently, two official plugins are available:
+## 📋 Requisitos Previos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Antes de empezar, necesitas tener instalado:
 
-## React Compiler
+- [Node.js](https://nodejs.org/) (versión 18 o superior)
+  - Descárgalo desde: https://nodejs.org/
+  - Recomendado: Descargar la versión LTS (Long Term Support)
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## 🚀 Instalación
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/SamuelVicente937/ProyectoSistemas1.git
+cd ProyectoSistemas1/SistemaFormularios
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+O si no tienes Git instalado:
+- Ve a: https://github.com/SamuelVicente937/ProyectoSistemas1
+- Click en el botón verde "Code"
+- Click en "Download ZIP"
+- Descomprime el archivo
+- Abre la carpeta en tu terminal o CMD
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Instalar dependencias
+```bash
+npm install
 ```
+
+Este comando instalará automáticamente:
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
+- Lucide React (iconos)
+- Y todas las demás dependencias necesarias
+
+### 3. Ejecutar el proyecto
+```bash
+npm run dev
+```
+
+El proyecto se abrirá en: `http://localhost:5173`
+
+## 🛠️ Comandos Disponibles
+
+- `npm run dev` - Inicia el servidor de desarrollo
+- `npm run build` - Compila el proyecto para producción
+- `npm run preview` - Vista previa de la versión de producción
+
+## 📁 Estructura del Proyecto
+```
+src/
+├── components/
+│   ├── Login/
+│   │   └── Login.tsx
+│   ├── Input/
+│   │   └── Input.tsx
+│   ├── Button/
+│   │   └── Button.tsx
+│   └── index.ts
+├── assets/
+│   └── logo-univalle.png
+├── App.tsx
+└── main.tsx
+```
+
+## 🎨 Tecnologías Utilizadas
+
+- **React** - Biblioteca de JavaScript para interfaces de usuario
+- **TypeScript** - JavaScript con tipado estático
+- **Tailwind CSS** - Framework de CSS utility-first
+- **Vite** - Herramienta de construcción rápida
+- **Lucide React** - Iconos modernos
+
+## ⚠️ Solución de Problemas
+
+### Error: "node no se reconoce como comando"
+- Asegúrate de haber instalado Node.js correctamente
+- Reinicia tu terminal o CMD después de instalar Node.js
+
+### Error: "npm no se reconoce como comando"
+- Node.js incluye npm automáticamente
+- Verifica que Node.js esté en las variables de entorno del sistema
+
+### El puerto 5173 ya está en uso
+```bash
+# Busca el proceso y ciérralo, o usa otro puerto
+npm run dev -- --port 3000
+```
+
+### Los estilos no se ven correctamente
+```bash
+# Limpia la caché y reinstala
+rm -rf node_modules
+npm install
+npm run dev
+```
+
+## 📝 Notas
+
+- No subas la carpeta `node_modules` a GitHub (ya está en `.gitignore`)
+- Si modificas algo, haz commit y push de tus cambios
+- Cada vez que alguien descargue el proyecto, debe correr `npm install`
