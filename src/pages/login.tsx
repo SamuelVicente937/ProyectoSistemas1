@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Facebook, Instagram, Lock, Mail, Twitter } from "lucide-react";
-import logoUnivalle from "../../assets/logo-univalle.png"; 
-import { Input, Button } from "../index";
+import logoUnivalle from "../assets/logo-univalle.png";
+import { Button, Input } from "../components";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");

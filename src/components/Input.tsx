@@ -6,12 +6,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: LucideIcon;
 }
 
-export default function Input({
+const Input = ({
   label,
   icon: Icon,
   className = '',
   ...props
-}: InputProps) {
+}: InputProps) => {
   return (
     <div className="relative">
       {label && (
@@ -31,3 +31,5 @@ export default function Input({
     </div>
   );
 }
+
+export default Input;
