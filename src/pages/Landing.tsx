@@ -154,9 +154,7 @@ const Landing = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-6">
             Iniciar <span className="text-[#a00000]">Sesion?</span>
           </h2>
-          <p className="text-xl text-[#767676]/80 mb-8">
-            Descripcion de algo?
-          </p>
+          <p className="text-xl text-[#767676]/80 mb-8">Descripcion de algo?</p>
           <Link to="/login">
             <Button variant="primary" className="px-12 py-4 text-lg group">
               Iniciar Sesion
