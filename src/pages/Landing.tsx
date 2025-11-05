@@ -2,31 +2,32 @@ import { Link } from "react-router-dom";
 import { Button, Footer, Navbar } from "../components";
 import {
   ArrowRight,
+  BarChart,
   CheckCircle,
-  Shield,
-  Target,
+  Code2,
+  Lock,
   Users,
-  Zap,
 } from "lucide-react";
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
-      <section className="pt-32 mt-20 pb-24 px-4 bg-gradient-to-br from-[#a00000] via-[#767676] to-[#a00000] text-white relative overflow-hidden">
+      <section className="pt-40 mt-20 pb-32 px-4 bg-gradient-to-br from-[#a00000] via-[#767676] to-[#a00000] text-white relative overflow-hidden">
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob"></div>
         <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-[#a00000]/30 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
 
         <div className="max-w-7xl mx-auto relative z-10 ">
           <div className="text-center">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-              Poner algun texto
-              <span className="block text-white/90 animate-pulse">
-                Algo de texto mas
+              Control de Laboratorios
+              <span className="block text-[#a00000]/60 animate-pulse">
+                Inteligente
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-              Poner mas texto
+              Inicia sesión para poder llenar el formulario de control de
+              laboratorios
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to="/login">
@@ -51,43 +52,31 @@ const Landing = () => {
       <section id="features" className="py-20 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-4">
-              Univalle <span className="text-[#a00000]">Por que?</span>
+            <h2 className="text-5xl md:text-6xl font-bold text-[#767676] mb-4">
+              ¿Por qué elegir{" "}
+              <span className="text-[#a00000]">nuestros laboratorios?</span>
             </h2>
-            <p className="text-xl text-[#767676]/80 max-w-2xl mx-auto">
-              Poner texto
-            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-10">
+              <p className="text-2xl text-[#767676]/80 max-w-2xl mx-auto">
+                <span className="text-[#a00000] font-bold">Misión: </span>
+                Proporcionar a los estudiantes un entorno tecnológico moderno y seguro, que facilite el aprendizaje práctico, la investigación y el desarrollo de proyectos innovadores en el área de la ingeniería y la tecnología.
+              </p>
+               <p className="text-2xl text-[#767676]/80 max-w-2xl mx-auto">
+                <span className="text-[#a00000] font-bold">Visión: </span>
+                Ser un referente en educación tecnológica dentro de la universidad, ofreciendo laboratorios de cómputo de vanguardia que potencien la creatividad, la colaboración y la formación integral de los estudiantes.
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
               <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
-                <Zap className="w-8 h-8 text-white" />
+                <Code2 className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#767676] mb-3">
-                Caracteristicas
+                Innovación tecnológica
               </h3>
-              <p className="text-[#767676]/70">Descripcion</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-[#767676] mb-3">
-                Caracteristicas
-              </h3>
-              <p className="text-[#767676]/70">Descripcion</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
-                <Target className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-[#767676] mb-3">
-                Caracteristicas
-              </h3>
-              <p className="text-[#767676]/70">Descripcion</p>
+              <p className="text-lg text-[#767676]/70">Nuestros laboratorios cuentan con hardware y software de vanguardia, fomentando la creatividad y el desarrollo de proyectos tecnológicos avanzados.</p>
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
@@ -95,9 +84,29 @@ const Landing = () => {
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#767676] mb-3">
-                Caracteristicas
+                Colaboración y trabajo en equipo
               </h3>
-              <p className="text-[#767676]/70">Descripcion</p>
+              <p className="text-lg text-[#767676]/70">Promovemos el trabajo conjunto entre estudiantes y docentes, creando un entorno de aprendizaje colaborativo y enriquecedor.</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
+                <BarChart className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#767676] mb-3">
+                Optimización de recursos
+              </h3>
+              <p className="text-lg text-[#767676]/70">Nuestro sistema permite gestionar equipos y horarios de manera eficiente, asegurando un uso óptimo de los laboratorios y sus recursos.</p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
+                <Lock className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#767676] mb-3">
+                Seguridad y control de acceso
+              </h3>
+              <p className="text-lg text-[#767676]/70">Garantizamos un entorno seguro con control de acceso, protección de equipos y supervisión constante de las actividades en los laboratorios.</p>
             </div>
           </div>
         </div>
@@ -107,29 +116,42 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-6">
-                Sobre <span className="text-[#a00000]">Nosotros</span>
+              <h2 className="text-5xl md:text-6xl font-bold text-[#767676] mb-6">
+                Sobre nuestros{" "}
+                <span className="text-[#a00000]">Laboratorios</span>
               </h2>
-              <p className="text-lg text-[#767676]/80 mb-6">
-                Formamos profesionales globales e innovadores, destinados a
-                liderar procesos de cambio que generan bienestar social.
+              <p className="text-xl text-[#767676]/80 mb-6 ">
+                Nuestros laboratorios de cómputo son espacios diseñados para
+                potenciar el aprendizaje práctico y la innovación tecnológica.
+                Están equipados con hardware de alto rendimiento y software
+                especializado que permiten a los estudiantes desarrollar
+                proyectos, programar, simular entornos y realizar prácticas en
+                diversas áreas de la ingeniería y la tecnología.
               </p>
-              <ul className="space-y-4">
+              <ul className="space-y-4 text-lg">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-[#a00000] flex-shrink-0 mt-1" />
-                  <span className="text-[#767676]/80">Caracteristicas</span>
+                  <span className="text-[#767676]/80">
+                    Equipos de alto rendimiento
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-[#a00000] flex-shrink-0 mt-1" />
-                  <span className="text-[#767676]/80">Caracteristicas</span>
+                  <span className="text-[#767676]/80">
+                    Software especializado
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-[#a00000] flex-shrink-0 mt-1" />
-                  <span className="text-[#767676]/80">Caracteristicas</span>
+                  <span className="text-[#767676]/80">
+                    Seguridad y control de acceso
+                  </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-[#a00000] flex-shrink-0 mt-1" />
-                  <span className="text-[#767676]/80">Caracteristicas</span>
+                  <span className="text-[#767676]/80">
+                    Soporte académico
+                  </span>
                 </li>
               </ul>
             </div>
@@ -152,9 +174,9 @@ const Landing = () => {
       <section id="contact" className="py-20 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-6">
-            Iniciar <span className="text-[#a00000]">Sesion?</span>
+            Iniciar <span className="text-[#a00000]">Sesion</span>
           </h2>
-          <p className="text-xl text-[#767676]/80 mb-8">Descripcion de algo?</p>
+          <p className="text-xl text-[#767676]/80 mb-8"> Accede al sistema para registrar tu asistencia y gestionar tus prácticas en los laboratorios de cómputo.</p>
           <Link to="/login">
             <Button variant="primary" className="px-12 py-4 text-lg group">
               Iniciar Sesion

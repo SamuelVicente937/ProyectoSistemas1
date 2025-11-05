@@ -50,33 +50,9 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
             />
-
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-[#a00000] border-[#767676] rounded focus:ring-[#a00000] transition-all"
-                />
-                <span className="ml-2 text-[#767676] group-hover:text-[#a00000] transition-colors">
-                  Recordarme
-                </span>
-              </label>
-
-              <a
-                href="#"
-                className="text-[#767676] hover:text-[#a00000] transition-colors"
-              >
-                Olvido su contraseña?
-              </a>
-            </div>
             <div className="flex gap-4 pt-4">
               <Button type="submit" variant="primary" fullWidth>
                 Iniciar Sesion
-              </Button>
-              <Button type="submit" variant="secondary" fullWidth>
-                Registrarse
               </Button>
             </div>
           </form>
@@ -87,19 +63,19 @@ const Login = () => {
             </span>
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://www.facebook.com/univallelpz/?locale=es_LA" target="_blank"
                 className="text-[#767676] hover:text-[#a00000] transform hover:scale-110 transition-all"
               >
                 <Facebook className="w-5 h-5"></Facebook>
               </a>
               <a
-                href="#"
+                href="https://x.com/univallelapaz?lang=es" target="_blank"
                 className="text-[#767676] hover:text-[#a00000] transform hover:scale-110 transition-all"
               >
                 <Twitter className="w-5 h-5"></Twitter>
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/univalle_lapaz/" target="_blank"
                 className="text-[#767676] hover:text-[#a00000] transform hover:scale-110 transition-all"
               >
                 <Instagram className="w-5 h-5"></Instagram>
