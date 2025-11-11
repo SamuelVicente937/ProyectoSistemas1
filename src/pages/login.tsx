@@ -2,15 +2,66 @@ import { useState } from "react";
 import { Facebook, Instagram, Lock, Mail, Twitter } from "lucide-react";
 import logoUnivalle from "../assets/logo-univalle.png";
 import { Button, Input } from "../components";
+import { useNavigate } from "react-router-dom";
+import { authService } from "../api/authService";
+
+interface FormData {
+  correo_institucional: string;
+  password: string;
+}
 
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<FormData>({
+    correo_institucional: '', 
+    password: ''
+  })
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+    setError("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const data = await authService.login(
+        formData.correo_institucional,
+        formData.password
+      )
+
+      switch (data.user.tipo_usuario) {
+        case "docente":
+          navigate("/docente/dashboard");
+          break;
+        case "estudiante":
+          navigate("/estudiante/dashboard");
+          break;
+        case "personal":
+          navigate("/control/dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+
+    } catch (err:any) {
+      setError(err.messsage || "Credenciales incorrectas");
+    } finally{
+      setLoading(false);
+    }
+
+
+
   };
 
   return (
@@ -37,22 +88,24 @@ const Login = () => {
             <Input
               label="Correo electronico"
               type="email"
+              name="correo_institucional"
               icon={Mail}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.correo_institucional}
+              onChange={handleChange}
               placeholder="est@univalle.edu"
             />
             <Input
               label="Contraseña"
               type="password"
+              name="password"
               icon={Lock}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               placeholder="••••••••••••"
             />
             <div className="flex gap-4 pt-4">
-              <Button type="submit" variant="primary" fullWidth>
-                Iniciar Sesion
+              <Button type="submit" variant="primary" fullWidth disabled={loading}>
+                {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
               </Button>
             </div>
           </form>
