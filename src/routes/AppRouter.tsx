@@ -2,6 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import { Landing, Login } from "../pages";
 import { authService } from "../api/authService";
 import DocenteDashboard from "../pages/DocenteDashboard";
+import EstudianteDashboard from "../pages/EstudianteDashboard";
+import ControlDashboard from "../pages/ControlDashboard";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedTypes?: Array<'docente' | 'estudiante' | 'personal'>;
@@ -52,7 +54,7 @@ const Router = () =>{
             </ProtectedRoute>
           }
         />
-{/*         
+        
         <Route
           path="/estudiante/dashboard"
           element={
@@ -69,7 +71,7 @@ const Router = () =>{
               <ControlDashboard />
             </ProtectedRoute>
           }
-        /> */}
+        />
       </Routes>
     </BrowserRouter>
     )

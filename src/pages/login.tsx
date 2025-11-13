@@ -54,8 +54,9 @@ const Login = () => {
           navigate("/");
       }
 
-    } catch (err:any) {
-      setError(err.messsage || "Credenciales incorrectas");
+    } catch (err) {
+      const error = err as { message?: string };
+      setError(error.message || "Credenciales incorrectas");
     } finally{
       setLoading(false);
     }
@@ -85,6 +86,11 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+             {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
             <Input
               label="Correo electronico"
               type="email"
