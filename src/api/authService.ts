@@ -1,3 +1,4 @@
+// src/api/authService.ts
 import api from './axios';
 import { AxiosError } from 'axios';
 
@@ -29,8 +30,8 @@ export const authService = {
         password,
       });
       
-      // Guardar token en localStorage
-      localStorage.setItem('auth_token', response.data.access_token);
+      // Guardar token y usuario
+      localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
       return response.data;
@@ -43,24 +44,39 @@ export const authService = {
   async logout(): Promise<void> {
     try {
       await api.post('/logout');
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
+    } finally {
+      // Limpiar siempre, incluso si falla la petición
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
   },
 
   async getMe(): Promise<User> {
-    const response = await api.get<{ user: User }>('/me');
-    return response.data.user;
+    try {
+      const response = await api.get<{ user: User }>('/me');
+      return response.data.user;
+    } catch (error) {
+      // Si falla, limpiar datos locales
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      throw error;
+    }
   },
 
   getUser(): User | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
   },
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('auth_token');
+    return !!localStorage.getItem('token');
   },
 };

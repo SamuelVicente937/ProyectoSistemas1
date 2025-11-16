@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import { authService } from "../api/authService";
-import { Button, Footer, Modal, Navbar, StatCard } from "../components";
-import { AlertCircle, BookOpen, Link2, LogOut, Users } from "lucide-react";
+import {
+  Button,
+  Footer,
+  Modal,
+  Navbar,
+  StatCard,
+  FormLink,
+} from "../components";
+import {BookOpen, Link2, LogOut, Users } from "lucide-react";
+import type { FormData } from "../components/FormLink";
+import { sesionService } from "../api/sesionService";
 
 interface User {
   id: number;
@@ -12,63 +21,161 @@ interface User {
   correo: string;
   tipo_usuario: "docente" | "estudiante" | "personal";
 }
-
-interface GeneratedLink {
-  id: number;
-  link: string;
-  createdAt: string;
-  expiresAt: string;
+interface Stats {
+  clases_hoy: number;
+  sesiones_activas: number;
+  asistencias_hoy: number;
 }
+
+interface Sesion {
+  id_sesion: number;
+  materia: string;
+  horario: string;
+  grupo: string;
+  laboratorio: string;
+  total_estudiantes_registrados: number;
+  enlace_token: string;
+  estado_sesion: string;
+  fecha_expiracion: string;
+}
+
+
 
 export default function DocenteDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [generatedLinks, setGeneratedLinks] = useState<GeneratedLink[]>([
-    {
-      id: 1,
-      link: "https://univalle.edu/assist/abc123xyz",
-      createdAt: "2025-11-12",
-      expiresAt: "2025-11-19",
-    },
-    {
-      id: 2,
-      link: "https://univalle.edu/assist/def456uvw",
-      createdAt: "2025-11-11",
-      expiresAt: "2025-11-18",
-    },
-  ]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
+  const [stats, setStats] = useState<Stats>({
+    clases_hoy: 0,
+    sesiones_activas: 0,
+    asistencias_hoy: 0,
+  });
+
+  const [sesionesActivas, setSesionesActivas] = useState<Sesion[]>([]);
+
+  const [enlaceGenerado, setEnlaceGenerado] = useState<{
+    token: string;
+    materia: string;
+    grupo: string;
+    horario: string;
+    dia: string;
+    aula: string;
+    laboratorio: string;
+    fecha_expiracion: string;
+  } | null>(null);
+
+  // const generateUniqueId = () => {
+  //   return Math.random().toString(36).substring(2, 11).toUpperCase();
+  // };
+
+ useEffect(() => {
     const userData = authService.getUser();
     if (!userData || userData.tipo_usuario !== "docente") {
       navigate("/login");
       return;
     }
     setUser(userData);
+    loadData();
   }, [navigate]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([loadEstadisticas(), loadSesionesActivas()]);
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadEstadisticas = async () => {
+    try {
+      const data = await sesionService.getEstadisticas();
+      setStats(data);
+    } catch (error: any) {
+      console.error("Error al cargar estadísticas:", error);
+    }
+  };
+
+  const loadSesionesActivas = async () => {
+    try {
+      const data = await sesionService.getSesionesActivas();
+      setSesionesActivas(data.sesiones);
+    } catch (error: any) {
+      console.error("Error al cargar sesiones:", error);
+    }
+  };
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+    setShowSuccess(false);
+    setEnlaceGenerado(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setShowSuccess(false);
+    setEnlaceGenerado(null);
+  };
 
   const handleLogout = async (): Promise<void> => {
     await authService.logout();
     navigate("/login");
   };
 
-  const handleGenerateLink = () => {
-    const newLink: GeneratedLink = {
-      id: generatedLinks.length + 1,
-      link: `https://univalle.edu/assist/${Math.random()
-        .toString(36)
-        .substring(7)}`,
-      createdAt: new Date().toISOString().split("T")[0],
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
-    };
-    setGeneratedLinks([newLink, ...generatedLinks]);
-    setShowModal(false);
+  const handleGenerateLink = async (formData: FormData) => {
+    try {
+      setSubmitting(true);
+
+      const response = await sesionService.generarEnlace({
+        id_horario: formData.id_horario,
+        id_lab: formData.id_lab,
+        observaciones: formData.observaciones,
+      });
+
+       console.log('Response:', response); 
+
+      if (response.success) {
+        setEnlaceGenerado({
+          token: response.sesion.enlace_token,
+          materia: response.sesion.materia,
+          grupo: response.sesion.grupo,
+          horario: response.sesion.horario,
+          dia: response.sesion.dia,
+          aula: response.sesion.aula,
+          laboratorio: response.sesion.laboratorio,
+          fecha_expiracion: response.sesion.fecha_expiracion,
+        });
+
+        setShowSuccess(true);
+        await loadData();
+      }
+    } catch (error: any) {
+      console.error("Error al generar enlace:", error);
+      alert(error.response?.data?.message || "Error al generar el enlace");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  if (!user) return <div>Cargando...</div>;
+  const copiarEnlace = (token: string) => {
+    const enlaceCompleto = `${window.location.origin}/asistencia/${token}`;
+    navigator.clipboard.writeText(enlaceCompleto);
+    alert("Enlace copiado al portapapeles");
+  };
+
+ if (!user || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-600 text-lg">Cargando...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -111,23 +218,23 @@ export default function DocenteDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <StatCard
               icon={BookOpen}
-              title="Clases"
-              value={5}
-              subtitle="Hoy: 3"
+              title="Clases hoy"
+              value={stats.clases_hoy}
+              subtitle="Programadas"
               variant="primary"
             />
             <StatCard
-              icon={Users}
-              title="Estudiantes Activos"
-              value={45}
-              subtitle="Presentes: 42"
+              icon={Link2}
+              title="Sesiones Activos"
+              value={stats.sesiones_activas}
+              subtitle="Enlaces generados"
               variant="secondary"
             />
             <StatCard
-              icon={AlertCircle}
-              title="Reportes Pendientes"
-              value={2}
-              subtitle="Urgentes: 1"
+              icon={Users}
+              title="Asistencias Hoy"
+              value={stats.asistencias_hoy}
+              subtitle="Estudiantes registrados"
               variant="warning"
             />
           </div>
@@ -147,7 +254,7 @@ export default function DocenteDashboard() {
               <Button
                 variant="primary"
                 className="px-8 py-3 text-lg font-bold"
-                onClick={() => setShowModal(true)}
+                onClick={handleOpenModal}
               >
                 Generar Nuevo Enlace
               </Button>
@@ -158,7 +265,7 @@ export default function DocenteDashboard() {
             <div className="flex items-center gap-3 mb-8">
               <div className="w-6 h-6 bg-[#a00000] rounded-lg"></div>
               <h2 className="text-3xl font-bold text-[#767676]">
-                Enlaces Generados ({generatedLinks.length})
+                Sesiones activas Hoy ({sesionesActivas.length})
               </h2>
             </div>
 
@@ -167,13 +274,22 @@ export default function DocenteDashboard() {
                 <thead>
                   <tr className="border-b-2 border-[#767676]">
                     <th className="text-left py-4 px-4 text-[#a00000] font-bold text-sm uppercase tracking-wider">
-                      Enlace
+                      Materia
                     </th>
                     <th className="text-left py-4 px-4 text-[#a00000] font-bold text-sm uppercase tracking-wider">
-                      Creado
+                      Horario
                     </th>
                     <th className="text-left py-4 px-4 text-[#a00000] font-bold text-sm uppercase tracking-wider">
-                      Expira
+                      Grupo
+                    </th>
+                    <th className="text-left py-4 px-4 text-[#a00000] font-bold text-sm uppercase tracking-wider">
+                      Lab
+                    </th>
+                    <th className="text-center py-4 px-4 text-[#a00000] font-bold text-sm uppercase tracking-wider">
+                      Estudiantes
+                    </th>
+                    <th className="text-center py-4 px-4 text-[#a00000] font-bold text-sm uppercase tracking-wider">
+                      Estado
                     </th>
                     <th className="text-center py-4 px-4 text-[#a00000] font-bold text-sm uppercase tracking-wider">
                       Acción
@@ -181,29 +297,43 @@ export default function DocenteDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {generatedLinks.length > 0 ? (
-                    generatedLinks.map((link) => (
+                  {sesionesActivas.length > 0 ? (
+                    sesionesActivas.map((sesion) => (
                       <tr
-                        key={link.id}
+                        key={sesion.id_sesion}
                         className="border-b border-[#767676]/20 hover:bg-[#a00000]/5 transition-colors"
                       >
-                        <td className="py-4 px-4">
-                          <code className="text-[#a00000] text-sm font-mono font-bold break-all">
-                            {link.link}
-                          </code>
+                        <td className="py-4 px-4 text-[#767676] font-semibold">
+                          {sesion.materia}
                         </td>
                         <td className="py-4 px-4 text-[#767676] font-semibold">
-                          {link.createdAt}
+                          {sesion.horario}
                         </td>
                         <td className="py-4 px-4 text-[#767676] font-semibold">
-                          {link.expiresAt}
+                          {sesion.grupo}
+                        </td>
+                        <td className="py-4 px-4 text-[#767676] font-semibold">
+                          {sesion.laboratorio}
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-bold text-sm">
+                            {sesion.total_estudiantes_registrados}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          {sesion.estado_sesion === "activa" ? (
+                            <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full font-bold text-xs">
+                              🟢 Activa
+                            </span>
+                          ) : (
+                            <span className="inline-block px-3 py-1 bg-gray-100 text-gray-800 rounded-full font-bold text-xs">
+                              ⚫ Cerrada
+                            </span>
+                          )}
                         </td>
                         <td className="py-4 px-4 text-center">
                           <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(link.link);
-                              alert("Enlace copiado al portapapeles");
-                            }}
+                            onClick={() => copiarEnlace(sesion.enlace_token)}
                             className="px-4 py-2 bg-[#a00000] text-white rounded-lg text-sm font-bold hover:bg-[#8a0000] transition-all duration-300 transform hover:scale-105 shadow-md"
                           >
                             Copiar
@@ -214,10 +344,10 @@ export default function DocenteDashboard() {
                   ) : (
                     <tr>
                       <td
-                        colSpan={4}
+                        colSpan={7}
                         className="py-8 text-center text-[#767676] font-semibold"
                       >
-                        No hay enlaces generados aún
+                        No hay sesiones activas hoy. Genera un enlace para comenzar.
                       </td>
                     </tr>
                   )}
@@ -228,16 +358,18 @@ export default function DocenteDashboard() {
         </div>
       </div>
 
-      <Modal
+       <Modal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onConfirm={handleGenerateLink}
-        title="Generar Enlace"
-        message="¿Deseas crear un nuevo enlace de asistencia? Este enlace será válido por 7 días."
-        confirmText="Generar"
+        onClose={handleCloseModal}
+        title="Generar Enlace de Asistencia"
+        message=""
         cancelText="Cancelar"
-      />
-
+        isSuccess={showSuccess}
+        successMessage="¡Enlace Generado Exitosamente!"
+        enlaceGenerado={enlaceGenerado}
+      >
+        {!showSuccess && <FormLink onSubmit={handleGenerateLink} />}
+      </Modal>
       <Footer />
     </div>
   );

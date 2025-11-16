@@ -30,40 +30,58 @@ const Login = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const data = await authService.login(
-        formData.correo_institucional,
-        formData.password
-      )
+  // Limpiar localStorage antes de login
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  console.log('🧹 localStorage limpiado antes de login');
 
-      switch (data.user.tipo_usuario) {
-        case "docente":
-          navigate("/docente/dashboard");
-          break;
-        case "estudiante":
-          navigate("/estudiante/dashboard");
-          break;
-        case "personal":
-          navigate("/control/dashboard");
-          break;
-        default:
-          navigate("/");
-      }
+  try {
+    console.log('📧 Intentando login con:', formData.correo_institucional);
+    
+    const data = await authService.login(
+      formData.correo_institucional,
+      formData.password
+    );
 
-    } catch (err) {
-      const error = err as { message?: string };
-      setError(error.message || "Credenciales incorrectas");
-    } finally{
-      setLoading(false);
+    console.log('✅ Login exitoso!', data);
+    console.log('🎫 Token RECIBIDO del backend:', data.access_token);
+    console.log('🎫 Token GUARDADO en localStorage:', localStorage.getItem('token'));
+    
+    // Verificar que son iguales
+    if (data.access_token === localStorage.getItem('token')) {
+      console.log('✅ TOKEN CORRECTO - Coinciden!');
+    } else {
+      console.error('❌ ERROR - Los tokens NO coinciden!');
+      console.error('Backend:', data.access_token);
+      console.error('LocalStorage:', localStorage.getItem('token'));
     }
 
+    switch (data.user.tipo_usuario) {
+      case "docente":
+        navigate("/docente/dashboard");
+        break;
+      case "estudiante":
+        navigate("/estudiante/dashboard");
+        break;
+      case "personal":
+        navigate("/control/dashboard");
+        break;
+      default:
+        navigate("/");
+    }
 
-
-  };
+  } catch (err) {
+    console.error('❌ Error en login:', err);
+    const error = err as { message?: string };
+    setError(error.message || "Credenciales incorrectas");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#a00000] via-[#767676] to-[#a00000] flex items-center justify-center p-4">
