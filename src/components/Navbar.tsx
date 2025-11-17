@@ -4,7 +4,6 @@ import Button from "./Button";
 import { Menu, X } from "lucide-react";
 // import logoUnivalle from "../assets/logo-univalle.png";
 import logoUnivalle2 from "../assets/logo_uni2.png";
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -12,7 +11,7 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-md">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
        <div className="flex items-center justify-between py-4">
-          <Link to="/" className="tracking-wide">
+          <Link to="/" className="tracking-wide ">
             <img src={logoUnivalle2} alt="logo-univalle" className="h-20 w-auto" />
           </Link>
 
@@ -25,6 +24,9 @@ const Navbar = () => {
             </a>
             <a href="#contact" className="text-[#767676] hover:text-[#a00000] transition-colors font-medium text-lg" >
               Contactanos!
+            </a>
+            <a href="https://enlace.univalle.edu/san/webform/PAutenticar.aspx" target="_blank" className="text-[#767676] hover:text-[#a00000] transition-colors font-medium text-lg" >
+              S.I.U.
             </a>
             <Link to="/login">
               <Button variant="primary" className="px-6 py-1">

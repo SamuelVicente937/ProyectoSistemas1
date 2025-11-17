@@ -1,8 +1,15 @@
 import { useState } from "react";
-import { Facebook, Instagram, Lock, Mail, Twitter } from "lucide-react";
+import {
+  ArrowLeft,
+  Facebook,
+  Instagram,
+  Lock,
+  Mail,
+  Twitter,
+} from "lucide-react";
 import logoUnivalle from "../assets/logo-univalle.png";
 import { Button, Input } from "../components";
-import { useNavigate } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import { authService } from "../api/authService";
 
 interface FormData {
@@ -10,13 +17,12 @@ interface FormData {
   password: string;
 }
 
-
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
-    correo_institucional: '', 
-    password: ''
-  })
+    correo_institucional: "",
+    password: "",
+  });
 
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,58 +36,66 @@ const Login = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  // Limpiar localStorage antes de login
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  console.log('🧹 localStorage limpiado antes de login');
+    // // Limpiar localStorage antes de login
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("user");
+    // console.log("🧹 localStorage limpiado antes de login");
 
-  try {
-    console.log('📧 Intentando login con:', formData.correo_institucional);
-    
-    const data = await authService.login(
-      formData.correo_institucional,
-      formData.password
-    );
+    try {
+      // console.log("📧 Intentando login con:", formData.correo_institucional);
 
-    console.log('✅ Login exitoso!', data);
-    console.log('🎫 Token RECIBIDO del backend:', data.access_token);
-    console.log('🎫 Token GUARDADO en localStorage:', localStorage.getItem('token'));
-    
-    // Verificar que son iguales
-    if (data.access_token === localStorage.getItem('token')) {
-      console.log('✅ TOKEN CORRECTO - Coinciden!');
-    } else {
-      console.error('❌ ERROR - Los tokens NO coinciden!');
-      console.error('Backend:', data.access_token);
-      console.error('LocalStorage:', localStorage.getItem('token'));
+      const data = await authService.login(
+        formData.correo_institucional,
+        formData.password
+      );
+
+      // console.log("✅ Login exitoso!", data);
+      // console.log("🎫 Token RECIBIDO del backend:", data.access_token);
+      // console.log(
+      //   "🎫 Token GUARDADO en localStorage:",
+      //   localStorage.getItem("token")
+      // );
+
+      // // Verificar que son iguales
+      // if (data.access_token === localStorage.getItem("token")) {
+      //   console.log("✅ TOKEN CORRECTO - Coinciden!");
+      // } else {
+      //   console.error("❌ ERROR - Los tokens NO coinciden!");
+      //   console.error("Backend:", data.access_token);
+      //   console.error("LocalStorage:", localStorage.getItem("token"));
+      // }
+      const redirectUrl = localStorage.getItem("redirectAfterLogin");
+
+      if (redirectUrl) {
+        localStorage.removeItem("redirectAfterLogin");
+        navigate(redirectUrl);
+      } else {
+        switch (data.user.tipo_usuario) {
+          case "docente":
+            navigate("/docente/dashboard");
+            break;
+          case "estudiante":
+            navigate("/estudiante/dashboard");
+            break;
+          case "personal":
+            navigate("/control/dashboard");
+            break;
+          default:
+            navigate("/");
+        }
+      }
+    } catch (err) {
+      console.error("❌ Error en login:", err);
+      const error = err as { message?: string };
+      setError(error.message || "Credenciales incorrectas");
+    } finally {
+      setLoading(false);
     }
-
-    switch (data.user.tipo_usuario) {
-      case "docente":
-        navigate("/docente/dashboard");
-        break;
-      case "estudiante":
-        navigate("/estudiante/dashboard");
-        break;
-      case "personal":
-        navigate("/control/dashboard");
-        break;
-      default:
-        navigate("/");
-    }
-
-  } catch (err) {
-    console.error('❌ Error en login:', err);
-    const error = err as { message?: string };
-    setError(error.message || "Credenciales incorrectas");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#a00000] via-[#767676] to-[#a00000] flex items-center justify-center p-4">
@@ -90,8 +104,17 @@ const Login = () => {
                 transform transition-all duration-500 hover:scale-[1.01]"
       >
         <article className="w-full md:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-          <header className="mb-12">
-            <img src={logoUnivalle} alt="logo-univalle" className="h-25 w-auto" />
+          <header className="mb-12 flex items-center justify-between">
+            <div>
+              <Link to="/">
+                <ArrowLeft className="inline-block w-13 h-13 hover:-translate-x-1/12 transition-transform text-[#767676]" />
+              </Link>
+            </div>
+            <img
+              src={logoUnivalle}
+              alt="logo-univalle"
+              className="h-25 w-auto"
+            />
           </header>
 
           <div className="mb-10">
@@ -104,7 +127,7 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-             {error && (
+            {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
                 {error}
               </div>
@@ -128,7 +151,12 @@ const Login = () => {
               placeholder="••••••••••••"
             />
             <div className="flex gap-4 pt-4">
-              <Button type="submit" variant="primary" fullWidth disabled={loading}>
+              <Button
+                type="submit"
+                variant="primary"
+                fullWidth
+                disabled={loading}
+              >
                 {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
               </Button>
             </div>
@@ -140,19 +168,22 @@ const Login = () => {
             </span>
             <div className="flex gap-4">
               <a
-                href="https://www.facebook.com/univallelpz/?locale=es_LA" target="_blank"
+                href="https://www.facebook.com/univallelpz/?locale=es_LA"
+                target="_blank"
                 className="text-[#767676] hover:text-[#a00000] transform hover:scale-110 transition-all"
               >
                 <Facebook className="w-5 h-5"></Facebook>
               </a>
               <a
-                href="https://x.com/univallelapaz?lang=es" target="_blank"
+                href="https://x.com/univallelapaz?lang=es"
+                target="_blank"
                 className="text-[#767676] hover:text-[#a00000] transform hover:scale-110 transition-all"
               >
                 <Twitter className="w-5 h-5"></Twitter>
               </a>
               <a
-                href="https://www.instagram.com/univalle_lapaz/" target="_blank"
+                href="https://www.instagram.com/univalle_lapaz/"
+                target="_blank"
                 className="text-[#767676] hover:text-[#a00000] transform hover:scale-110 transition-all"
               >
                 <Instagram className="w-5 h-5"></Instagram>

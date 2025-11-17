@@ -1,47 +1,15 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Landing, Login } from "../pages";
-import { authService } from "../api/authService";
 import DocenteDashboard from "../pages/DocenteDashboard";
 import EstudianteDashboard from "../pages/EstudianteDashboard";
 import ControlDashboard from "../pages/ControlDashboard";
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-  allowedTypes?: Array<'docente' | 'estudiante' | 'personal'>;
-}
+import ProtectedRoute from "./ProtectedRoute";
+import RegistroAsistencia from "../pages/RegistroAsistencia";
 
-// function ProtectedRoute({ children, allowedTypes }: ProtectedRouteProps) {
-//   const user = authService.getUser();
-  
-//   if (!authService.isAuthenticated()) {
-//     return <Navigate to="/login" />;
-//   }
-  
-//   if (allowedTypes && !allowedTypes.includes(user?.tipo_usuario)) {
-//     return <Navigate to="/login" />;
-//   }
-  
-//   return <>{children}</>;
-// }
 
-function ProtectedRoute({ children, allowedTypes }: ProtectedRouteProps) {
-  const user = authService.getUser();
-
-  // Si no está autenticado, redirige
-  if (!authService.isAuthenticated() || !user) {
-    return <Navigate to="/login" />;
-  }
-
-  // Si hay tipos permitidos y el usuario no está en ellos, redirige
-  if (allowedTypes && !allowedTypes.includes(user.tipo_usuario)) {
-    return <Navigate to="/login" />;
-  }
-
-  return <>{children}</>;
-}
-
-const Router = () =>{
-    return(
-        <BrowserRouter>
+const Router = () => {
+  return (
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -49,7 +17,7 @@ const Router = () =>{
         <Route
           path="/docente/dashboard"
           element={
-            <ProtectedRoute allowedTypes={['docente']}>
+            <ProtectedRoute allowedRoles={['docente']}>
               <DocenteDashboard />
             </ProtectedRoute>
           }
@@ -58,7 +26,7 @@ const Router = () =>{
         <Route
           path="/estudiante/dashboard"
           element={
-            <ProtectedRoute allowedTypes={['estudiante']}>
+            <ProtectedRoute allowedRoles={['estudiante']}>
               <EstudianteDashboard />
             </ProtectedRoute>
           }
@@ -67,13 +35,27 @@ const Router = () =>{
         <Route
           path="/control/dashboard"
           element={
-            <ProtectedRoute allowedTypes={['personal']}>
+            <ProtectedRoute allowedRoles={['personal']}>
               <ControlDashboard />
             </ProtectedRoute>
           }
         />
+
+        {/* 👇 AGREGAR: Ruta de asistencia */}
+        <Route
+          path="/asistencia/:token"
+          element={
+            <ProtectedRoute allowedRoles={['estudiante']}>
+               <RegistroAsistencia /> 
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 👇 AGREGAR: Página 401 */}
+        <Route path="/unauthorized" element={<div>No autorizado</div>} />
       </Routes>
     </BrowserRouter>
-    )
+  );
 }
+
 export default Router;

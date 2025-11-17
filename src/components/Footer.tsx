@@ -74,7 +74,7 @@ const Footer = () => {
               <a
                 href="https://x.com/univallelapaz?lang=es"
                 target="_blank"
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all transform hover:scale-110"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[white]/20  flex items-center justify-center transition-all transform hover:scale-110  "
               >
                 <Twitter className="w-5 h-5"></Twitter>
               </a>

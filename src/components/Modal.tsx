@@ -17,8 +17,11 @@ interface ModalProps {
     grupo: string;
     horario: string;
     dia: string;
-    aula: string;
     laboratorio: string;
+    laboratorio_asignado?: {
+      codigo_lab: string;
+      nombre_lab: string;
+    } | null;
     fecha_expiracion: string;
   } | null;
 }
@@ -45,29 +48,29 @@ const Modal = ({
     }
   };
 
-  const compartirWhatsApp = () => {
+  const compartirTeams = () => {
     if (enlaceGenerado) {
       const enlaceCompleto = `${window.location.origin}/asistencia/${enlaceGenerado.token}`;
-      const mensaje = `🎓 *REGISTRO DE ASISTENCIA*\n\nMateria: ${
-        enlaceGenerado.materia
-      }\nGrupo: ${enlaceGenerado.grupo}\nHorario: ${enlaceGenerado.dia} ${
-        enlaceGenerado.horario
-      }\nAula: ${enlaceGenerado.aula}\nLab: ${
-        enlaceGenerado.laboratorio
-      }\n\n👉 Registra tu asistencia aquí:\n${enlaceCompleto}\n\n⏰ El enlace expira: ${new Date(
+      const mensaje = `REGISTRO DE ASISTENCIA
+      Materia: ${enlaceGenerado.materia}
+      Grupo: ${enlaceGenerado.grupo}
+      Horario: ${enlaceGenerado.dia} ${enlaceGenerado.horario}
+      Lab: ${enlaceGenerado.laboratorio}
+      👉 Registra tu asistencia aquí:
+      ${enlaceCompleto}
+      ⏰ El enlace expira: ${new Date(
         enlaceGenerado.fecha_expiracion
       ).toLocaleString("es-BO")}`;
-      window.open(
-        `https://wa.me/?text=${encodeURIComponent(mensaje)}`,
-        "_blank"
-      );
+      const teamsUrl = `msteams://teams.microsoft.com/l/chat/0/0?message=${encodeURIComponent(
+        mensaje
+      )}`;
+      window.open(teamsUrl, "_blank");
     }
   };
-
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-100 border-2 border-[#767676]">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md lg:max-w-lg transform transition-all duration-300 scale-100 border-2 border-[#767676]">
         {isSuccess ? (
           <div className="flex flex-col items-center justify-center p-12">
             <div className="mb-5 animate-bounce">
@@ -83,7 +86,9 @@ const Modal = ({
             {enlaceGenerado && (
               <div className="w-full space-y-4 mb-6">
                 <div className="bg-gray-50 border-2 border-[#767676] rounded-lg p-4">
-                  <p className="text-sm text-[#767676] font-bold mb-2">🔗 ENLACE GENERADO</p>
+                  <p className="text-sm text-[#767676] font-bold mb-2">
+                    ENLACE GENERADO
+                  </p>
                   <code className="text-xs text-[#a00000] break-all block font-mono">
                     {`${window.location.origin}/asistencia/${enlaceGenerado.token}`}
                   </code>
@@ -111,17 +116,19 @@ const Modal = ({
                     )}
                   </button>
                   <button
-                    onClick={compartirWhatsApp}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition text-sm"
+                    onClick={compartirTeams}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#a00000]/90 text-white rounded-lg font-bold hover:bg-[#a00000]/80 transition text-sm"
                   >
                     <Share2 className="w-4 h-4" />
-                    WhatsApp
+                    Teams
                   </button>
                 </div>
 
-                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                  <p className="font-bold text-blue-900 mb-2 text-sm">ℹ️ Información:</p>
-                  <ul className="space-y-1 text-xs text-blue-800">
+                <div className="bg-red-50 border-2 border-[#a00000] rounded-lg p-4">
+                  <p className="font-bold text-[#a00000] mb-2 text-sm">
+                    Información:
+                  </p>
+                  <ul className="space-y-1 text-xs text-[#767676]">
                     <li>
                       • <strong>Materia:</strong> {enlaceGenerado.materia}
                     </li>
@@ -129,18 +136,19 @@ const Modal = ({
                       • <strong>Grupo:</strong> {enlaceGenerado.grupo}
                     </li>
                     <li>
-                      • <strong>Horario:</strong> {enlaceGenerado.dia} {enlaceGenerado.horario}
+                      • <strong>Horario:</strong> {enlaceGenerado.dia}{" "}
+                      {enlaceGenerado.horario}
                     </li>
                     <li>
-                      • <strong>Aula:</strong> {enlaceGenerado.aula}
-                    </li>
-                    <li>
-                      • <strong>Laboratorio:</strong> {enlaceGenerado.laboratorio}
+                      • <strong>Laboratorio:</strong>{" "}
+                      {enlaceGenerado.laboratorio}
                     </li>
                   </ul>
-                  <p className="mt-2 text-blue-900 font-bold text-xs">
-                    ⏰ Expira:{" "}
-                    {new Date(enlaceGenerado.fecha_expiracion).toLocaleString("es-BO")}
+                  <p className="mt-2 text-[#a00000] font-bold text-xs">
+                    Expira:{" "}
+                    {new Date(enlaceGenerado.fecha_expiracion).toLocaleString(
+                      "es-BO"
+                    )}
                   </p>
                 </div>
               </div>
@@ -155,7 +163,7 @@ const Modal = ({
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between p-7 border-b-2 border-[#767676]">
+            <div className="flex items-center justify-between px-7 py-4 border-b-2 border-[#767676]">
               <h2 className="text-3xl font-black text-[#a00000]">{title}</h2>
               <button
                 onClick={onClose}
@@ -165,7 +173,7 @@ const Modal = ({
               </button>
             </div>
 
-            <div className=" flex flex-col gap-3 p-8">
+            <div className=" flex flex-col gap-3 px-5 pb-6">
               <p className="text-[#767676] text-lg font-semibold mb-6">
                 {message}
               </p>

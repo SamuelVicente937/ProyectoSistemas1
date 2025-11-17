@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { authService } from "../api/authService";
 import {
   Button,
@@ -9,7 +9,7 @@ import {
   StatCard,
   FormLink,
 } from "../components";
-import {BookOpen, Link2, LogOut, Users } from "lucide-react";
+import { BookOpen, Link2, LogOut, Users } from "lucide-react";
 import type { FormData } from "../components/FormLink";
 import { sesionService } from "../api/sesionService";
 
@@ -39,8 +39,6 @@ interface Sesion {
   fecha_expiracion: string;
 }
 
-
-
 export default function DocenteDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -63,7 +61,6 @@ export default function DocenteDashboard() {
     grupo: string;
     horario: string;
     dia: string;
-    aula: string;
     laboratorio: string;
     fecha_expiracion: string;
   } | null>(null);
@@ -71,8 +68,8 @@ export default function DocenteDashboard() {
   // const generateUniqueId = () => {
   //   return Math.random().toString(36).substring(2, 11).toUpperCase();
   // };
-
- useEffect(() => {
+ 
+  useEffect(() => {
     const userData = authService.getUser();
     if (!userData || userData.tipo_usuario !== "docente") {
       navigate("/login");
@@ -131,32 +128,41 @@ export default function DocenteDashboard() {
   const handleGenerateLink = async (formData: FormData) => {
     try {
       setSubmitting(true);
-
+      console.log("1. Enviando datos:", formData);
       const response = await sesionService.generarEnlace({
         id_horario: formData.id_horario,
         id_lab: formData.id_lab,
         observaciones: formData.observaciones,
       });
 
-       console.log('Response:', response); 
+      console.log("2. Response recibido:", response); // 👈 DEBUG
+      console.log("3. response.sesion:", response.sesion); // 👈 DEBUG
+      console.log("4. showSuccess antes:", showSuccess); // 👈 DEBUG
+      if (response && response.sesion) {
+        console.log("5. Entrando al if - seteando enlaceGenerado");
 
-      if (response.success) {
         setEnlaceGenerado({
           token: response.sesion.enlace_token,
           materia: response.sesion.materia,
           grupo: response.sesion.grupo,
           horario: response.sesion.horario,
           dia: response.sesion.dia,
-          aula: response.sesion.aula,
           laboratorio: response.sesion.laboratorio,
           fecha_expiracion: response.sesion.fecha_expiracion,
         });
-
+        // setShowModal(true);
+        console.log("6. Seteando showSuccess a true");
         setShowSuccess(true);
+        console.log("7. Recargando data...");
         await loadData();
+        console.log("8. Todo completado");
+      } else {
+        console.error("Response no tiene la estructura esperada:", response);
+        alert("Error: La respuesta del servidor no tiene el formato esperado");
       }
     } catch (error: any) {
       console.error("Error al generar enlace:", error);
+      console.error("Error response:", error.response); // 👈 Ver error completo
       alert(error.response?.data?.message || "Error al generar el enlace");
     } finally {
       setSubmitting(false);
@@ -169,7 +175,7 @@ export default function DocenteDashboard() {
     alert("Enlace copiado al portapapeles");
   };
 
- if (!user || loading) {
+  if (!user || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-gray-600 text-lg">Cargando...</div>
@@ -316,18 +322,18 @@ export default function DocenteDashboard() {
                           {sesion.laboratorio}
                         </td>
                         <td className="py-4 px-4 text-center">
-                          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-bold text-sm">
+                          <span className="inline-block px-3 py-1 bg-red-100 text-[#a00000] rounded-full font-bold text-sm">
                             {sesion.total_estudiantes_registrados}
                           </span>
                         </td>
                         <td className="py-4 px-4 text-center">
                           {sesion.estado_sesion === "activa" ? (
-                            <span className="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full font-bold text-xs">
-                              🟢 Activa
+                            <span className="inline-block px-3 py-1 bg-red-100 text-[#a00000] rounded-full font-bold text-xs">
+                              🔴 Activa
                             </span>
                           ) : (
-                            <span className="inline-block px-3 py-1 bg-gray-100 text-gray-800 rounded-full font-bold text-xs">
-                              ⚫ Cerrada
+                            <span className="inline-block px-3 py-1 bg-gray-100 text-[#767676] rounded-full font-bold text-xs">
+                              ⚪ Cerrada
                             </span>
                           )}
                         </td>
@@ -347,7 +353,8 @@ export default function DocenteDashboard() {
                         colSpan={7}
                         className="py-8 text-center text-[#767676] font-semibold"
                       >
-                        No hay sesiones activas hoy. Genera un enlace para comenzar.
+                        No hay sesiones activas hoy. Genera un enlace para
+                        comenzar.
                       </td>
                     </tr>
                   )}
@@ -358,7 +365,7 @@ export default function DocenteDashboard() {
         </div>
       </div>
 
-       <Modal
+      <Modal
         isOpen={showModal}
         onClose={handleCloseModal}
         title="Generar Enlace de Asistencia"
@@ -368,7 +375,12 @@ export default function DocenteDashboard() {
         successMessage="¡Enlace Generado Exitosamente!"
         enlaceGenerado={enlaceGenerado}
       >
-        {!showSuccess && <FormLink onSubmit={handleGenerateLink} />}
+        {!showSuccess && (
+          <FormLink
+            onSubmit={handleGenerateLink}
+            isSubmitting={submitting} // 👈 AGREGAR
+          />
+        )}
       </Modal>
       <Footer />
     </div>
