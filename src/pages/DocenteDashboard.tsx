@@ -46,6 +46,7 @@ export default function DocenteDashboard() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [stats, setStats] = useState<Stats>({
     clases_hoy: 0,
@@ -68,7 +69,7 @@ export default function DocenteDashboard() {
   // const generateUniqueId = () => {
   //   return Math.random().toString(36).substring(2, 11).toUpperCase();
   // };
- 
+
   useEffect(() => {
     const userData = authService.getUser();
     if (!userData || userData.tipo_usuario !== "docente") {
@@ -76,20 +77,38 @@ export default function DocenteDashboard() {
       return;
     }
     setUser(userData);
-    loadData();
+    loadData(true);
+
+    const interval = setInterval(() => {
+      console.log("Actualizannodoooo");
+      loadData(false);
+    }, 10000);
+
+    return () => {
+      console.log("Limpiando intervalo");
+      clearInterval(interval);
+    };
   }, [navigate]);
 
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = async (isInitialLoad = false) => {
+    if (isInitialLoad) {
+      setLoading(true);
+    } else {
+      setIsRefreshing(true);
+    }
+
     try {
       await Promise.all([loadEstadisticas(), loadSesionesActivas()]);
     } catch (error) {
       console.error("Error al cargar datos:", error);
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false); 
+      } else {
+        setIsRefreshing(false); 
+      }
     }
   };
-
   const loadEstadisticas = async () => {
     try {
       const data = await sesionService.getEstadisticas();
@@ -154,7 +173,7 @@ export default function DocenteDashboard() {
         console.log("6. Seteando showSuccess a true");
         setShowSuccess(true);
         console.log("7. Recargando data...");
-        await loadData();
+        await loadData(false);
         console.log("8. Todo completado");
       } else {
         console.error("Response no tiene la estructura esperada:", response);
@@ -378,7 +397,7 @@ export default function DocenteDashboard() {
         {!showSuccess && (
           <FormLink
             onSubmit={handleGenerateLink}
-            isSubmitting={submitting} // 👈 AGREGAR
+            isSubmitting={submitting} 
           />
         )}
       </Modal>

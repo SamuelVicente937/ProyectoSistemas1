@@ -99,7 +99,7 @@ const Modal = ({
                     onClick={copiarEnlace}
                     className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-bold transition text-sm ${
                       copied
-                        ? "bg-green-500 text-white"
+                        ? "bg-[#a00000] text-white"
                         : "bg-[#767676] text-white hover:bg-[#5a5a5a]"
                     }`}
                   >
