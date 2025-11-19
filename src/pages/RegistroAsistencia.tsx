@@ -121,7 +121,7 @@ const RegistroAsistencia = () => {
       console.log("✅ Asistencia registrada:", response.data);
 
       // Redirigir a página de éxito o mostrar mensaje
-      alert("¡Asistencia registrada exitosamente!");
+      // alert("¡Asistencia registrada exitosamente!");
       // navigate('/dashboard'); // O donde quieras redirigir
       const equipoSeleccionado = sesion?.equipos.find(
         (e) => e.id_equipo === selectedEquipment
@@ -182,7 +182,7 @@ const RegistroAsistencia = () => {
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
-        <div className="pt-40 pb-20 px-4">
+        <div className="pt-44 pb-20 px-4">
           <div className="max-w-2xl mx-auto">
             <div className="flex flex-col items-center text-center mb-8">
               <div className="mb-6 animate-bounce">
@@ -229,8 +229,8 @@ const RegistroAsistencia = () => {
                   </p>
                   <p className="text-xl font-black">
                     {equipmentState === "operativo"
-                      ? "✓ Operativo"
-                      : "⚠ Con Fallas"}
+                      ? "Operativo"
+                      : "Con Fallas"}
                   </p>
                 </div>
               </div>
@@ -262,7 +262,7 @@ const RegistroAsistencia = () => {
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      <div className="pt-40 pb-20 px-4">
+      <div className="pt-44 pb-20 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
             <div className="mb-6 animate-bounce">

@@ -206,7 +206,7 @@ export default function DocenteDashboard() {
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      <div className="pt-35 pb-20 px-4">
+      <div className="pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="bg-gradient-to-r from-[#767676] to-[#a00000] rounded-2xl p-8 mb-8 shadow-xl">
             <div className="flex flex-col md:flex-row md:items-center nd:justify-between gap-6">
