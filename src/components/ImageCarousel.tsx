@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import lab1 from "../assets/lab-04.webp";
+import lab2 from "../assets/lab2.webp";
+import lab3 from "../assets/lab3.webp";
+import lab4 from "../assets/lab4.webp";
+import lab5 from "../assets/lab5.webp";
 interface CarouselImage {
   id: string;
   url: string;
@@ -17,27 +22,27 @@ const ImageCarousel = ({
   images = [
     {
       id: "1",
-      url: "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      url: lab1,
       alt: "Teamwork and collaboration",
     },
     {
       id: "2",
-      url: "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      url: lab2,
       alt: "Digital transformation",
     },
     {
       id: "3",
-      url: "https://images.pexels.com/photos/3182762/pexels-photo-3182762.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      url: lab3,
       alt: "Business success",
     },
     {
       id: "4",
-      url: "https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      url: lab4,
       alt: "Innovation and growth",
     },
     {
       id: "5",
-      url: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      url: lab5,
       alt: "Professional workspace",
     },
   ],
