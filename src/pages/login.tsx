@@ -8,7 +8,6 @@ import {
   Twitter,
   X,
 } from "lucide-react";
-import logoUnivalle from "../assets/logo-univalle.png";
 import logoLabValle from "../assets/logo-labvalle.svg";
 import { Button, Input } from "../components";
 import { Link, useNavigate } from "react-router-dom";
