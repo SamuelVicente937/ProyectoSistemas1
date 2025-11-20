@@ -41,7 +41,7 @@ const Router = () => {
           }
         />
 
-        {/* 👇 AGREGAR: Ruta de asistencia */}
+
         <Route
           path="/asistencia/:token"
           element={
@@ -51,7 +51,6 @@ const Router = () => {
           }
         />
 
-        {/* 👇 AGREGAR: Página 401 */}
         <Route path="/unauthorized" element={<div>No autorizado</div>} />
       </Routes>
     </BrowserRouter>

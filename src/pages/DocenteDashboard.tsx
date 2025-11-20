@@ -141,7 +141,7 @@ export default function DocenteDashboard() {
 
   const handleLogout = async (): Promise<void> => {
     await authService.logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const handleGenerateLink = async (formData: FormData) => {

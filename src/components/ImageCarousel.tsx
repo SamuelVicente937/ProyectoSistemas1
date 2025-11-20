@@ -23,27 +23,27 @@ const ImageCarousel = ({
     {
       id: "1",
       url: lab1,
-      alt: "Teamwork and collaboration",
+      alt: "imagen1",
     },
     {
       id: "2",
       url: lab2,
-      alt: "Digital transformation",
+      alt: "Imagen 2",
     },
     {
       id: "3",
       url: lab3,
-      alt: "Business success",
+      alt: "Imagen 3",
     },
     {
       id: "4",
       url: lab4,
-      alt: "Innovation and growth",
+      alt: "Imagen 4",
     },
     {
       id: "5",
       url: lab5,
-      alt: "Professional workspace",
+      alt: "Imagen 5",
     },
   ],
   autoPlay = true,

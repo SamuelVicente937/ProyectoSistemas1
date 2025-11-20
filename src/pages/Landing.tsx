@@ -9,8 +9,12 @@ import {
   Users,
 } from "lucide-react";
 import labFoto1 from "../assets/lab-04.webp";
+import Login from "./login";
+import { useState } from "react";
 
 const Landing = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-white flex flex-col scroll-smooth">
       <Navbar />
@@ -21,10 +25,10 @@ const Landing = () => {
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob"></div>
         <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-[#a00000]/30 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
 
-        <div className="max-w-7xl mx-auto relative z-10 ">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 xl:gap-20 items-center">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 lg:gap-16 xl:gap-20 items-center">
             <div className="text-center ">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 md:mb-10 animate-fade-in">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 md:mb-12 animate-fade-in">
                 Control de Laboratorios
                 <span className="block text-[#a00000]/60 animate-pulse">
                   Digital
@@ -35,7 +39,7 @@ const Landing = () => {
                 forma rápida y sencilla.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link to="/login">
+                {/* <Link to="/login">
                   <Button
                     variant="secondary"
                     className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-lg sm:text-xl group"
@@ -43,11 +47,17 @@ const Landing = () => {
                     Iniciar Sesion
                   </Button>
                   <ArrowRight className="hidden sm:inline-block ml-2 w-10 h-10 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                </Link> */}
+                <Button
+                  variant="secondary"
+                  className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-lg sm:text-xl group"
+                  onClick={() => setIsLoginOpen(true)}
+                >
+                  Iniciar Sesion
+                  <ArrowRight className="inline-block ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                </Button>
                 <a href="#features">
-                  <button
-                    className="px-12 sm:px-12 md:px-12 py-4 sm:py-5 md:py-6 text-lg sm:text-xl font-semibold text-white border-2 border-white rounded-lg hover:bg-white hover:text-[#a00000] transition-all duration-300 transform hover:scale-105"
-                  >
+                  <button className="px-12 sm:px-12 md:px-12 py-4 sm:py-5 md:py-6 text-lg sm:text-xl font-semibold text-white border-2 border-white rounded-lg hover:bg-white hover:text-[#a00000] transition-all duration-300 transform hover:scale-105">
                     Aprende más
                   </button>
                 </a>
@@ -181,7 +191,9 @@ const Landing = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-[#a00000] flex-shrink-0 mt-1" />
-                  <span className="text-[#767676]/80 mt-0.5">Soporte académico</span>
+                  <span className="text-[#767676]/80 mt-0.5">
+                    Soporte académico
+                  </span>
                 </li>
               </ul>
             </div>
@@ -216,14 +228,27 @@ const Landing = () => {
             Accede al sistema para registrar tu asistencia y gestionar tus
             prácticas en los laboratorios de cómputo.
           </p>
-          <Link to="/login">
+          {/* <Link to="/login">
             <Button variant="primary" className="px-12 py-4 text-lg group">
               Iniciar Sesion
               <ArrowRight className="inline-block ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
-          </Link>
+          </Link> */}
+          <Button
+            variant="primary"
+            className="px-12 py-4 text-lg group"
+            onClick={() => setIsLoginOpen(true)}
+          >
+            Iniciar Sesion
+            <ArrowRight className="inline-block ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </Button>
         </div>
       </section>
+      <Login
+        isModal={true}
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+      />
       <Footer />
     </div>
   );
