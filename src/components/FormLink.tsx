@@ -24,14 +24,6 @@ interface Horario {
   dia: string;
   hora_inicio: string;
   hora_fin: string;
-  // id_lab?: number;
-  // laboratorio?: {
-  //   id_lab: number;
-  //   codigo_lab: string;
-  //   nombre_lab: string;
-  //   piso: number;
-  //   capacidad: number;
-  // } | null;
   grupo: string;
 }
 
@@ -117,31 +109,14 @@ const FormLink = ({ onSubmit, isSubmitting = false }: FormLinkProps) => {
 
   const handleHorarioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value;
-    // setFormData({ ...formData, id_horario: id });
     if (id) {
       const horario = horarios.find((h) => h.id_horario === parseInt(id));
       setSelectedHorario(horario || null);
-      setFormData({ ...formData, id_horario: id }); // 👈 NO setear id_lab
+      setFormData({ ...formData, id_horario: id });
     } else {
       setSelectedHorario(null);
       setFormData({ ...formData, id_horario: "", id_lab: "" });
     }
-    // if (id) {
-    //   const horario = horarios.find((h) => h.id_horario === parseInt(id));
-    //   setSelectedHorario(horario || null);
-
-    //   if (horario?.id_lab) {
-    //     setFormData({
-    //       ...formData,
-    //       id_horario: id,
-    //       id_lab: horario.id_lab.toString(),
-    //     });
-    //   } else {
-    //     setFormData({ ...formData, id_horario: id });
-    //   }
-    // } else {
-    //   setSelectedHorario(null);
-    // }
   };
 
   const handleSubmit = (e: React.FormEvent) => {

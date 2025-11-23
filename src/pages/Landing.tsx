@@ -19,7 +19,7 @@ const Landing = () => {
       <Navbar />
       <section
         id="hero"
-        className="pt-44 mt-20 pb-36 px-4 bg-gradient-to-br from-[#a00000] via-[#767676] to-[#a00000] text-white relative overflow-hidden"
+        className="pt-32 mt-32 pb-36 px-4 bg-gradient-to-br from-[#800000] via-[#767676] to-[#a00000] text-white relative overflow-hidden"
       >
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob"></div>
         <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-[#a00000]/30 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
@@ -29,7 +29,7 @@ const Landing = () => {
             <div className="text-center ">
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 md:mb-12 animate-fade-in">
                 Control de Laboratorios
-                <span className="block text-[#a00000]/60 animate-pulse">
+                <span className="block text-[#a00000]/70 animate-pulse">
                   Digital
                 </span>
               </h1>
@@ -96,7 +96,7 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-[#a00000] rounded-xl flex items-center justify-center mb-6">
                 <Code2 className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#767676] mb-3">
@@ -110,7 +110,7 @@ const Landing = () => {
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-[#a00000] rounded-xl flex items-center justify-center mb-6">
                 <Users className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#767676] mb-3">
@@ -123,7 +123,7 @@ const Landing = () => {
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-[#a00000] rounded-xl flex items-center justify-center mb-6">
                 <BarChart className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#767676] mb-3">
@@ -137,7 +137,7 @@ const Landing = () => {
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#a00000] to-[#767676] rounded-xl flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-[#a00000] rounded-xl flex items-center justify-center mb-6">
                 <Lock className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#767676] mb-3">
@@ -248,7 +248,7 @@ const Landing = () => {
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
       />
-      <Footer />
+      <Footer variant="full"/>
     </div>
   );
 };

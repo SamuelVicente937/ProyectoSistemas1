@@ -29,11 +29,11 @@ const StatCard = ({
 
   return (
     <div
-      className={`border-2 ${variantStyles[variant]} rounded-2xl p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-white`}
+      className={`border-2 ${variantStyles[variant]} rounded-2xl p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-white` }
     >
       <div className="flex items-start gap-4">
-        <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-[#a00000] to-[#767676] flex items-center justify-center flex-shrink-0 shadow-md">
-          <Icon className="w-7 h-7 text-white" />
+        <div className="w-14 h-14 rounded-lg bg-[#a00000] flex items-center justify-center flex-shrink-0 ">
+          <Icon className="w-9 h-9 text-white" />
         </div>
         <div className="flex-1">
           <p className="text-xs text-[#767676] uppercase tracking-wider font-bold">{title}</p>

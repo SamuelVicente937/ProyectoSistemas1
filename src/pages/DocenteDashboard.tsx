@@ -9,9 +9,16 @@ import {
   StatCard,
   FormLink,
 } from "../components";
-import { BookOpen, Link2, LogOut, Users } from "lucide-react";
+import {
+  BookOpen,
+  GraduationCap,
+  Link2,
+  User,
+  Users,
+} from "lucide-react";
 import type { FormData } from "../components/FormLink";
 import { sesionService } from "../api/sesionService";
+import DashboardHeader from "../components/DashboardHeader";
 
 interface User {
   id: number;
@@ -66,10 +73,6 @@ export default function DocenteDashboard() {
     fecha_expiracion: string;
   } | null>(null);
 
-  // const generateUniqueId = () => {
-  //   return Math.random().toString(36).substring(2, 11).toUpperCase();
-  // };
-
   useEffect(() => {
     const userData = authService.getUser();
     if (!userData || userData.tipo_usuario !== "docente") {
@@ -103,9 +106,9 @@ export default function DocenteDashboard() {
       console.error("Error al cargar datos:", error);
     } finally {
       if (isInitialLoad) {
-        setLoading(false); 
+        setLoading(false);
       } else {
-        setIsRefreshing(false); 
+        setIsRefreshing(false);
       }
     }
   };
@@ -139,11 +142,6 @@ export default function DocenteDashboard() {
     setEnlaceGenerado(null);
   };
 
-  const handleLogout = async (): Promise<void> => {
-    await authService.logout();
-    navigate("/");
-  };
-
   const handleGenerateLink = async (formData: FormData) => {
     try {
       setSubmitting(true);
@@ -154,9 +152,9 @@ export default function DocenteDashboard() {
         observaciones: formData.observaciones,
       });
 
-      console.log("2. Response recibido:", response); // 👈 DEBUG
-      console.log("3. response.sesion:", response.sesion); // 👈 DEBUG
-      console.log("4. showSuccess antes:", showSuccess); // 👈 DEBUG
+      console.log("2. Response recibido:", response); 
+      console.log("3. response.sesion:", response.sesion); 
+      console.log("4. showSuccess antes:", showSuccess);
       if (response && response.sesion) {
         console.log("5. Entrando al if - seteando enlaceGenerado");
 
@@ -169,7 +167,6 @@ export default function DocenteDashboard() {
           laboratorio: response.sesion.laboratorio,
           fecha_expiracion: response.sesion.fecha_expiracion,
         });
-        // setShowModal(true);
         console.log("6. Seteando showSuccess a true");
         setShowSuccess(true);
         console.log("7. Recargando data...");
@@ -181,7 +178,7 @@ export default function DocenteDashboard() {
       }
     } catch (error: any) {
       console.error("Error al generar enlace:", error);
-      console.error("Error response:", error.response); // 👈 Ver error completo
+      console.error("Error response:", error.response);
       alert(error.response?.data?.message || "Error al generar el enlace");
     } finally {
       setSubmitting(false);
@@ -204,42 +201,16 @@ export default function DocenteDashboard() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar variant="simple" />
 
-      <div className="pt-40 pb-20 px-4">
+      <main className="pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-[#767676] to-[#a00000] rounded-2xl p-8 mb-8 shadow-xl">
-            <div className="flex flex-col md:flex-row md:items-center nd:justify-between gap-6">
-              <div>
-                <h1 className="text-4xl font-bold text-white mb-4">
-                  Bienvenido{" "}
-                  <span className="text-white font-black">
-                    {user.nombres} {user.apellidos}
-                  </span>
-                </h1>
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-3 text-white/90">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span className="font-medium">{user.correo}</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-white/90">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span className="font-medium">
-                      ID: {user.codigo_usuario}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-8 py-4 bg-white text-[#a00000] rounded-xl font-bold hover:shadow-2xl transition-all duration-300 transform hover:scale-105 text-lg"
-              >
-                <LogOut className="w-6 h-6" />
-                Cerrar Sesión
-              </button>
-            </div>
-          </div>
-
+          <DashboardHeader
+            userName={`${user.nombres} ${user.apellidos}`}
+            userEmail={user.correo}
+            userCode={user.codigo_usuario}
+            icon={GraduationCap}
+          />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <StatCard
               icon={BookOpen}
@@ -382,7 +353,7 @@ export default function DocenteDashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
       <Modal
         isOpen={showModal}
@@ -395,13 +366,10 @@ export default function DocenteDashboard() {
         enlaceGenerado={enlaceGenerado}
       >
         {!showSuccess && (
-          <FormLink
-            onSubmit={handleGenerateLink}
-            isSubmitting={submitting} 
-          />
+          <FormLink onSubmit={handleGenerateLink} isSubmitting={submitting} />
         )}
       </Modal>
-      <Footer />
+      <Footer variant="simple" />
     </div>
   );
 }

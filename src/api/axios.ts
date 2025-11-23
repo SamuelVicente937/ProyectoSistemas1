@@ -7,10 +7,9 @@ const api: AxiosInstance = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  withCredentials: true, // Para cookies de Sanctum
+  withCredentials: true, 
 });
 
-// Interceptor para agregar token a las peticiones
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     const token = localStorage.getItem("token");

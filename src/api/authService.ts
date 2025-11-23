@@ -1,4 +1,3 @@
-// src/api/authService.ts
 import api from './axios';
 import { AxiosError } from 'axios';
 
@@ -29,8 +28,7 @@ export const authService = {
         correo_institucional,
         password,
       });
-      
-      // Guardar token y usuario
+
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       
@@ -47,7 +45,6 @@ export const authService = {
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     } finally {
-      // Limpiar siempre, incluso si falla la petición
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
@@ -58,7 +55,6 @@ export const authService = {
       const response = await api.get<{ user: User }>('/me');
       return response.data.user;
     } catch (error) {
-      // Si falla, limpiar datos locales
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       throw error;

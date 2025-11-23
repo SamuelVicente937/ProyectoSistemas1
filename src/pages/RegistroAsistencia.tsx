@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Navbar, Footer } from "../components";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import api from "../api/axios";
+import { asistenciaService } from "../api/asistenciaService";
+import { sesionService } from "../api/sesionService";
 
 interface Equipo {
   id_equipo: number;
@@ -39,7 +40,7 @@ interface SuccessData {
 }
 
 type EstadoEquipo = "operativo" | "con_fallas";
-
+type TipoProblema = "hardware" | "software" | "red" | "otro";
 const RegistroAsistencia = () => {
   const { token } = useParams<{ token: string }>();
   //   const navigate = useNavigate();
@@ -59,6 +60,9 @@ const RegistroAsistencia = () => {
 
   const [stage, setStage] = useState<"form" | "success">("form");
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
+  const [yaRegistro, setYaRegistro] = useState(false);
+  const [asistenciaExistente, setAsistenciaExistente] = useState<any>(null);
+  const [tipoProblema, setTipoProblema] = useState<TipoProblema>("hardware");
 
   useEffect(() => {
     loadSesionData();
@@ -69,12 +73,26 @@ const RegistroAsistencia = () => {
       setLoading(true);
       console.log("🔍 Buscando sesión con token:", token);
 
-      const response = await api.get(`/sesion/${token}`);
-      console.log("✅ Respuesta completa del API:", response.data);
-      console.log("✅ Sesión:", response.data.sesion);
-      console.log("✅ Equipos recibidos:", response.data.sesion?.equipos);
+      // 1. Obtener datos de la sesión
+      const sesionData = await sesionService.obtenerSesionPorToken(token!);
+      console.log("✅ Sesión cargada:", sesionData);
+      setSesion(sesionData.sesion);
 
-      setSesion(response.data.sesion);
+      // 2. Verificar si ya registró asistencia (solo si está autenticado)
+      try {
+        const miAsistencia = await asistenciaService.verificarMiAsistencia(
+          token!
+        );
+        console.log("✅ Mi asistencia:", miAsistencia);
+
+        if (miAsistencia.registrado) {
+          setYaRegistro(true);
+          setAsistenciaExistente(miAsistencia.asistencia);
+        }
+      } catch (err) {
+        // Si no está autenticado o no hay asistencia, continuar normal
+        console.log("ℹ️ No hay asistencia previa registrada o no autenticado");
+      }
     } catch (err: any) {
       console.error("❌ Error al cargar sesión:", err);
       setError(
@@ -112,28 +130,27 @@ const RegistroAsistencia = () => {
       };
 
       // Si hay fallas, agregar observaciones
-      if (equipmentState === "con_fallas" && problemDescription.trim()) {
+      if (equipmentState === "con_fallas") {
+        payload.tipo_problema = tipoProblema;
         payload.observaciones = problemDescription.trim();
       }
 
-      const response = await api.post("/asistencia/registrar", payload);
+      // 👇 Usar asistenciaService para registrar
+      const response = await asistenciaService.registrarAsistencia(payload);
 
-      console.log("✅ Asistencia registrada:", response.data);
+      console.log("✅ Asistencia registrada:", response);
 
-      // Redirigir a página de éxito o mostrar mensaje
-      // alert("¡Asistencia registrada exitosamente!");
-      // navigate('/dashboard'); // O donde quieras redirigir
+      // Preparar datos para pantalla de éxito
       const equipoSeleccionado = sesion?.equipos.find(
         (e) => e.id_equipo === selectedEquipment
       );
+
       setSuccessData({
-        equipmentCode: equipoSeleccionado?.codigo_equipo || "N/A",
-        horaRegistro: new Date().toLocaleTimeString("es-BO", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
+        equipmentCode:
+          equipoSeleccionado?.codigo_equipo || response.asistencia.equipo,
+        horaRegistro: response.asistencia.hora_registro, // 👈 Usar hora del backend
       });
+
       setStage("success");
     } catch (err: any) {
       console.error("❌ Error al registrar asistencia:", err);
@@ -147,6 +164,7 @@ const RegistroAsistencia = () => {
     setStage("form");
     setSelectedEquipment(null);
     setEquipmentState("operativo");
+    setTipoProblema("hardware");
     setProblemDescription("");
     setSuccessData(null);
   };
@@ -178,10 +196,95 @@ const RegistroAsistencia = () => {
     );
   }
 
+  if (yaRegistro && asistenciaExistente) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar variant="simple" />
+        <div className="pt-44 pb-20 px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex flex-col items-center text-center mb-8">
+              <div className="mb-6">
+                <CheckCircle className="w-20 h-20 text-[#a00000] animate-bounce" />
+              </div>
+              <h1 className="text-4xl font-black text-[#767676] mb-2">
+                Ya Registraste tu Asistencia
+              </h1>
+              <p className="text-[#767676]/60 text-lg font-semibold">
+                Tu asistencia ya fue registrada en el equipo{" "}
+                <span className="font-black text-[#a00000]">
+                  {asistenciaExistente.equipo}
+                </span>{" "}
+                a las {asistenciaExistente.hora_registro}
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-r from-[#767676] to-[#a00000] rounded-2xl p-8 text-white mb-8 shadow-lg">
+              <h2 className="text-xl font-black mb-6 uppercase">
+                Detalles de tu Asistencia
+              </h2>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/20 rounded-xl p-4">
+                  <p className="text-sm font-semibold opacity-90 mb-1">
+                    MATERIA
+                  </p>
+                  <p className="text-xl font-black">{sesion.materia}</p>
+                </div>
+                <div className="bg-white/20 rounded-xl p-4">
+                  <p className="text-sm font-semibold opacity-90 mb-1">
+                    EQUIPO
+                  </p>
+                  <p className="text-xl font-black">
+                    {asistenciaExistente.equipo}
+                  </p>
+                </div>
+                <div className="bg-white/20 rounded-xl p-4">
+                  <p className="text-sm font-semibold opacity-90 mb-1">HORA</p>
+                  <p className="text-xl font-black">
+                    {asistenciaExistente.hora_registro}
+                  </p>
+                </div>
+                <div className="bg-white/20 rounded-xl p-4">
+                  <p className="text-sm font-semibold opacity-90 mb-1">
+                    LABORATORIO
+                  </p>
+                  <p className="text-xl font-black">
+                    {sesion.laboratorio.codigo}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {asistenciaExistente.observaciones && (
+              <div className="bg-red-100 border-l-4 border-[#a00000] rounded-lg p-4 mb-8">
+                <p className="text-sm font-black text-[#767676] mb-1">
+                  TU REPORTE:
+                </p>
+                <p className="text-[#767676] font-semibold">
+                  {asistenciaExistente.observaciones}
+                </p>
+              </div>
+            )}
+
+            {asistenciaExistente.puede_editar && (
+              <div className="bg-red-100 border-l-4 border-[#a00000] rounded-lg p-4">
+                <p className="text-[#767676] font-semibold text-sm">
+                  <span className="font-black">NOTA:</span> Aún puedes editar tu
+                  observación mientras la sesión esté activa desde tu dashboard.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+        <Footer variant="simple" />
+      </div>
+    );
+  }
+
   if (stage === "success" && successData) {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
+        <Navbar variant="simple" />
         <div className="pt-44 pb-20 px-4">
           <div className="max-w-2xl mx-auto">
             <div className="flex flex-col items-center text-center mb-8">
@@ -253,14 +356,14 @@ const RegistroAsistencia = () => {
             </button>
           </div>
         </div>
-        <Footer />
+        <Footer variant="simple" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <Navbar variant="simple" />
 
       <div className="pt-44 pb-20 px-4">
         <div className="max-w-2xl mx-auto">
@@ -421,9 +524,9 @@ const RegistroAsistencia = () => {
                     checked={equipmentState === "operativo"}
                     onChange={(e) => {
                       setEquipmentState(e.target.value as EstadoEquipo);
-                      setProblemDescription(""); // Limpiar descripción si cambia a operativo
+                      setProblemDescription("");
                     }}
-                    className="w-5 h-5 cursor-pointer"
+                    className="w-5 h-5 cursor-pointer accent-[#a00000]"
                   />
                   <span className="text-[#767676] font-bold">Operativo</span>
                 </label>
@@ -436,12 +539,106 @@ const RegistroAsistencia = () => {
                     onChange={(e) =>
                       setEquipmentState(e.target.value as EstadoEquipo)
                     }
-                    className="w-5 h-5 cursor-pointer"
+                    className="w-5 h-5 cursor-pointer accent-[#a00000]"
                   />
                   <span className="text-[#767676] font-bold">Con Fallas</span>
                 </label>
               </div>
             </div>
+
+            {/* 👇 NUEVA SECCIÓN: Tipo de problema - solo si hay fallas */}
+            {equipmentState === "con_fallas" && (
+              <div>
+                <label className="block text-sm font-black text-[#a00000] uppercase tracking-wider mb-4">
+                  Tipo de problema <span className="text-red-600">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="flex items-center gap-3 p-4 border-2 border-[#767676] rounded-xl cursor-pointer hover:bg-[#767676]/5 transition-all">
+                    <input
+                      type="radio"
+                      name="tipoProblema"
+                      value="hardware"
+                      checked={tipoProblema === "hardware"}
+                      onChange={(e) =>
+                        setTipoProblema(e.target.value as TipoProblema)
+                      }
+                      className="w-5 h-5 cursor-pointer accent-[#a00000]"
+                    />
+                    <div>
+                      <span className="text-[#767676] font-bold block">
+                        Hardware
+                      </span>
+                      <span className="text-xs text-[#767676]/60">
+                        Teclado, mouse, monitor, etc.
+                      </span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-4 border-2 border-[#767676] rounded-xl cursor-pointer hover:bg-[#767676]/5 transition-all">
+                    <input
+                      type="radio"
+                      name="tipoProblema"
+                      value="software"
+                      checked={tipoProblema === "software"}
+                      onChange={(e) =>
+                        setTipoProblema(e.target.value as TipoProblema)
+                      }
+                      className="w-5 h-5 cursor-pointer accent-[#a00000]"
+                    />
+                    <div>
+                      <span className="text-[#767676] font-bold block">
+                        Software
+                      </span>
+                      <span className="text-xs text-[#767676]/60">
+                        Sistema operativo, programas
+                      </span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-4 border-2 border-[#767676] rounded-xl cursor-pointer hover:bg-[#767676]/5 transition-all">
+                    <input
+                      type="radio"
+                      name="tipoProblema"
+                      value="red"
+                      checked={tipoProblema === "red"}
+                      onChange={(e) =>
+                        setTipoProblema(e.target.value as TipoProblema)
+                      }
+                      className="w-5 h-5 cursor-pointer accent-[#a00000]"
+                    />
+                    <div>
+                      <span className="text-[#767676] font-bold block">
+                        Red
+                      </span>
+                      <span className="text-xs text-[#767676]/60">
+                        Internet, conexión
+                      </span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-4 border-2 border-[#767676] rounded-xl cursor-pointer hover:bg-[#767676]/5 transition-all">
+                    <input
+                      type="radio"
+                      name="tipoProblema"
+                      value="otro"
+                      checked={tipoProblema === "otro"}
+                      onChange={(e) =>
+                        setTipoProblema(e.target.value as TipoProblema)
+                      }
+                      className="w-5 h-5 cursor-pointer accent-[#a00000]"
+                    />
+                    <div>
+                      <span className="text-[#767676] font-bold block">
+                        Otro
+                      </span>
+                      <span className="text-xs text-[#767676]/60">
+                        Otro tipo de problema
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            )}
 
             {/* Descripción del problema */}
             <div>
@@ -469,7 +666,6 @@ const RegistroAsistencia = () => {
                 </p>
               )}
             </div>
-
             {/* Botón de envío */}
             <button
               type="submit"
@@ -482,7 +678,7 @@ const RegistroAsistencia = () => {
         </div>
       </div>
 
-      <Footer />
+      <Footer variant="simple" />
     </div>
   );
 };

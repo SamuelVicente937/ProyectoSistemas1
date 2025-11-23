@@ -2,23 +2,41 @@ import { Facebook, House, Instagram, Mail, Phone, Twitter } from "lucide-react";
 import logoF4 from "../assets/3_1_.svg";
 import logoUnivalle from "../assets/LOGO-UNIVALLE-03_VEC.svg";
 
-const Footer = () => {
+interface FooterProps {
+  variant?: "full" | "simple";
+}
+const Footer = ({ variant = "full" }: FooterProps) => {
+  if (variant === "simple") {
+    return (
+      <footer>
+        <footer className="bg-gradient-to-br from-[#767676] to-[#a00000] text-white py-2 text-center">
+          <p className="text-white text-md flex items-center justify-center gap-2">
+            &copy; Univalle - LabValle {new Date().getFullYear()}. Todos los derechos
+            reservados.
+            <span className="flex items-center gap-2 pb-2.5">
+              <img src={logoF4} alt="logoAltF4" className="h-25 w-auto" />
+            </span>
+          </p>
+        </footer>
+      </footer>
+    );
+  }
+
   return (
     <footer className="bg-gradient-to-br from-[#767676] to-[#a00000] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 ">
-          <section> 
-            {/* <h3 className="text-2xl font-bold mb-4">Poner logo</h3>
-             */}
+          <section>
             <a href="#hero">
               <img
                 src={logoUnivalle}
                 alt="logoUnivalle"
-                className="h-30 w-auto"   
+                className="h-30 w-auto"
               />
             </a>
             <p className="text-white/80 text-lg pt-5 font-semibold ">
-              Control de laboratorios inteligente <br /><span className="text-white">Univalle para toda la vida</span>
+              Control de laboratorios inteligente <br />
+              <span className="text-white">Univalle para toda la vida</span>
             </p>
           </section>
           <div className="mt-10 ml-15">
@@ -98,12 +116,12 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="border-t border-white/20 mt-8 pt-3 text-center">
+          <div className="border-t border-white/20 mt-6 pt-3 text-center">
             <p className="text-white/60 text-sm flex items-center justify-center gap-2">
-              &copy; Univalle {new Date().getFullYear()}. Todos los derechos
+              &copy; Univalle - LabValle {new Date().getFullYear()}. Todos los derechos
               reservados.
               <span className="flex items-center gap-2 pb-1.5">
-                <img src={logoF4} alt="logoAltF4" className="h-40 w-auto" />
+                <img src={logoF4} alt="logoAltF4" className="h-45 w-auto" />
               </span>
             </p>
           </div>

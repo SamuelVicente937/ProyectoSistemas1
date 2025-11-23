@@ -56,9 +56,9 @@ const Modal = ({
       Grupo: ${enlaceGenerado.grupo}
       Horario: ${enlaceGenerado.dia} ${enlaceGenerado.horario}
       Lab: ${enlaceGenerado.laboratorio}
-      👉 Registra tu asistencia aquí:
+      Registra tu asistencia aquí:
       ${enlaceCompleto}
-      ⏰ El enlace expira: ${new Date(
+      El enlace expira: ${new Date(
         enlaceGenerado.fecha_expiracion
       ).toLocaleString("es-BO")}`;
       const teamsUrl = `msteams://teams.microsoft.com/l/chat/0/0?message=${encodeURIComponent(
@@ -69,7 +69,7 @@ const Modal = ({
   };
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md lg:max-w-lg transform transition-all duration-300 scale-100 border-2 border-[#767676]">
         {isSuccess ? (
           <div className="flex flex-col items-center justify-center p-12">
