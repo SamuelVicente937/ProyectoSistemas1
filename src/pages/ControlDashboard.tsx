@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../api/authService";
 import {
@@ -17,6 +17,10 @@ import {
   GraduationCap,
   Search,
 } from "lucide-react";
+import { useNotifications } from "../hooks/useNotifications";
+import { NotificationToast } from "../components";
+import { personalService } from "../api/personalService";
+
 interface User {
   id: number;
   nombres: string;
@@ -55,74 +59,115 @@ interface Comment {
   content: string;
 }
 
-const initialReports: Report[] = [
-  {
-    id: 1,
-    labId: "LAB-201",
-    equipmentId: "PC-12",
-    issue: "Teclado con teclas pegajosas",
-    reportedBy: "Juan Pérez",
-    reportedEmail: "juan.perez@test.univalle",
-    reportedDate: "2025-11-22 14:30",
-    status: "new",
-    priority: "high",
-    description: "Las teclas 'a', 's', 'd' no responden correctamente.",
-    reporter: {
-      nombre: "Juan Pérez Romero",
-      correo: "juan.perez@test.univalle",
-      codigo: "12345",
-    },
-    comments: [],
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-  },
-  {
-    id: 2,
-    labId: "LAB-205",
-    equipmentId: "PC-08",
-    issue: "Monitor sin señal",
-    reportedBy: "María López",
-    reportedEmail: "maria.lopez@test.univalle",
-    reportedDate: "2025-11-22 10:15",
-    status: "new",
-    priority: "critical",
-    description: "Monitor encendido pero sin imagen.",
-    reporter: {
-      nombre: "María López García",
-      correo: "maria.lopez@test.univalle",
-      codigo: "67890",
-    },
-    comments: [],
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
-  },
-  {
-    id: 3,
-    labId: "LAB-101",
-    equipmentId: "PC-03",
-    issue: "Mouse defectuoso",
-    reportedBy: "Carlos Rodriguez",
-    reportedEmail: "carlos.rodriguez@test.univalle",
-    reportedDate: "2025-11-21 16:45",
-    status: "in_review",
-    priority: "medium",
-    description: "Cursor errático, posible problema de driver.",
-    reporter: {
-      nombre: "Carlos Rodriguez Muñoz",
-      correo: "carlos.rodriguez@test.univalle",
-      codigo: "11111",
-    },
-    comments: [],
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-  },
-];
+// const initialReports: Report[] = [
+//   {
+//     id: 1,
+//     labId: "LAB-201",
+//     equipmentId: "PC-12",
+//     issue: "Teclado con teclas pegajosas",
+//     reportedBy: "Juan Pérez",
+//     reportedEmail: "juan.perez@test.univalle",
+//     reportedDate: "2025-11-22 14:30",
+//     status: "new",
+//     priority: "high",
+//     description: "Las teclas 'a', 's', 'd' no responden correctamente.",
+//     reporter: {
+//       nombre: "Juan Pérez Romero",
+//       correo: "juan.perez@test.univalle",
+//       codigo: "12345",
+//     },
+//     comments: [],
+//     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+//   },
+//   {
+//     id: 2,
+//     labId: "LAB-205",
+//     equipmentId: "PC-08",
+//     issue: "Monitor sin señal",
+//     reportedBy: "María López",
+//     reportedEmail: "maria.lopez@test.univalle",
+//     reportedDate: "2025-11-22 10:15",
+//     status: "new",
+//     priority: "critical",
+//     description: "Monitor encendido pero sin imagen.",
+//     reporter: {
+//       nombre: "María López García",
+//       correo: "maria.lopez@test.univalle",
+//       codigo: "67890",
+//     },
+//     comments: [],
+//     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+//   },
+//   {
+//     id: 3,
+//     labId: "LAB-101",
+//     equipmentId: "PC-03",
+//     issue: "Mouse defectuoso",
+//     reportedBy: "Carlos Rodriguez",
+//     reportedEmail: "carlos.rodriguez@test.univalle",
+//     reportedDate: "2025-11-21 16:45",
+//     status: "in_review",
+//     priority: "medium",
+//     description: "Cursor errático, posible problema de driver.",
+//     reporter: {
+//       nombre: "Carlos Rodriguez Muñoz",
+//       correo: "carlos.rodriguez@test.univalle",
+//       codigo: "11111",
+//     },
+//     comments: [],
+//     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+//   },
+//   {
+//     id: 4,
+//     labId: "LAB-101",
+//     equipmentId: "PC-03",
+//     issue: "Mouse defectuoso",
+//     reportedBy: "Carlos Rodriguez",
+//     reportedEmail: "carlos.rodriguez@test.univalle",
+//     reportedDate: "2025-11-21 16:45",
+//     status: "in_review",
+//     priority: "medium",
+//     description: "Cursor errático, posible problema de driver.",
+//     reporter: {
+//       nombre: "Carlos Rodriguez Muñoz",
+//       correo: "carlos.rodriguez@test.univalle",
+//       codigo: "11111",
+//     },
+//     comments: [],
+//     createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+//   },
+//   {
+//     id: 5,
+//     labId: "LAB-205",
+//     equipmentId: "PC-08",
+//     issue: "Monitor sin señal",
+//     reportedBy: "María López",
+//     reportedEmail: "maria.lopez@test.univalle",
+//     reportedDate: "2025-11-22 10:15",
+//     status: "new",
+//     priority: "critical",
+//     description: "Monitor encendido pero sin imagen.",
+//     reporter: {
+//       nombre: "María López García",
+//       correo: "maria.lopez@test.univalle",
+//       codigo: "67890",
+//     },
+//     comments: [],
+//     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+//   },
+// ];
 
 export default function DocenteDashboard() {
-  const [reports, setReports] = useState<Report[]>(initialReports);
+  const [reports, setReports] = useState<Report[]>([]);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | ReportStatus>("all");
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const { notifications, checkNewReports, removeNotification } =
+    useNotifications();
+  const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     const userData = authService.getUser();
@@ -133,14 +178,23 @@ export default function DocenteDashboard() {
     setUser(userData);
     loadData();
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       console.log("🔄 Auto-refresh reportes...");
       loadData(false);
     }, 30000);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [navigate]);
 
+  useEffect(() => {
+    const nuevosCount = reports.filter((r) => r.status === "new").length;
+    console.log("📊 Contando reportes nuevos:", nuevosCount);
+    checkNewReports(nuevosCount);
+  }, [reports, checkNewReports]);
   const loadData = async (showLoading = true) => {
     if (showLoading) setLoading(true);
 
@@ -150,9 +204,32 @@ export default function DocenteDashboard() {
       // setReports(data.reportes);
 
       console.log("📊 Cargando reportes...");
-      // Por ahora usa los datos iniciales
-    } catch (error) {
+
+      const data = await personalService.getReportes();
+      console.log("✅ Reportes cargados:", data);
+      const reportesMapeados: Report[] = data.reportes.map((r: any) => ({
+        id: r.id,
+        labId: r.labId,
+        equipmentId: r.equipmentId,
+        issue: r.issue,
+        reportedBy: r.reportedBy,
+        reportedEmail: r.reportedEmail,
+        reportedDate: r.reportedDate,
+        status: r.status,
+        priority: r.priority,
+        description: r.description,
+        reporter: r.reporter,
+        comments: r.comments || [],
+        createdAt: new Date(r.createdAt),
+      }));
+
+      setReports(reportesMapeados);
+    } catch (error: any) {
       console.error("Error al cargar reportes:", error);
+      if (error.response?.status === 401) {
+        authService.logout();
+        navigate("/login");
+      }
     } finally {
       if (showLoading) setLoading(false);
     }
@@ -164,39 +241,82 @@ export default function DocenteDashboard() {
     resueltos: reports.filter((r) => r.status === "resolved").length,
   };
 
-  const handleStatusChange = (reportId: number, newStatus: ReportStatus) => {
-    setReports((prevReports) =>
-      prevReports.map((report) =>
-        report.id === reportId ? { ...report, status: newStatus } : report
-      )
-    );
-    if (selectedReport?.id === reportId) {
-      setSelectedReport((prev) =>
-        prev ? { ...prev, status: newStatus } : null
+  const handleStatusChange = async (
+    reportId: number,
+    newStatus: ReportStatus
+  ) => {
+    try {
+      // Mapear estados del frontend al backend
+      const estadoBackend: Record<ReportStatus, string> = {
+        new: "pendiente",
+        in_review: "en_proceso",
+        resolved: "resuelto",
+      };
+
+      console.log(`🔄 Cambiando estado del reporte ${reportId} a ${newStatus}`);
+      await personalService.cambiarEstado(
+        reportId,
+        estadoBackend[newStatus] as any
+      );
+
+      // Actualizar localmente
+      setReports((prevReports) =>
+        prevReports.map((report) =>
+          report.id === reportId ? { ...report, status: newStatus } : report
+        )
+      );
+
+      if (selectedReport?.id === reportId) {
+        setSelectedReport((prev) =>
+          prev ? { ...prev, status: newStatus } : null
+        );
+      }
+
+      console.log("✅ Estado actualizado correctamente");
+    } catch (error: any) {
+      console.error("❌ Error al cambiar estado:", error);
+      alert(
+        error.response?.data?.message ||
+          "Error al actualizar el estado del reporte"
       );
     }
   };
 
-  const handleAddComment = (reportId: number, commentText: string) => {
-    const newComment: Comment = {
-      id: Date.now(),
-      author: user ? `${user.nombres} ${user.apellidos}` : "Usuario",
-      date: new Date().toLocaleString("es-BO"),
-      content: commentText,
-    };
+  const handleAddComment = async (reportId: number, commentText: string) => {
+    try {
+      console.log(`💬 Agregando comentario al reporte ${reportId}`);
 
-    setReports((prevReports) =>
-      prevReports.map((report) =>
-        report.id === reportId
-          ? { ...report, comments: [...report.comments, newComment] }
-          : report
-      )
-    );
-
-    if (selectedReport?.id === reportId) {
-      setSelectedReport((prev) =>
-        prev ? { ...prev, comments: [...prev.comments, newComment] } : null
+      const response = await personalService.agregarComentario(
+        reportId,
+        commentText
       );
+
+      console.log("✅ Comentario agregado:", response);
+
+      setReports((prevReports) =>
+        prevReports.map((report) =>
+          report.id === reportId
+            ? {
+                ...report,
+                comments: [...report.comments, response.comentario],
+              }
+            : report
+        )
+      );
+
+      if (selectedReport?.id === reportId) {
+        setSelectedReport((prev) =>
+          prev
+            ? {
+                ...prev,
+                comments: [...prev.comments, response.comentario],
+              }
+            : null
+        );
+      }
+    } catch (error: any) {
+      console.error("❌ Error al agregar comentario:", error);
+      alert(error.response?.data?.message || "Error al agregar comentario");
     }
   };
 
@@ -258,6 +378,16 @@ export default function DocenteDashboard() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar variant="simple" />
+
+      <div className="fixed top-24 right-4 z-50 space-y-2">
+        {notifications.map((notification) => (
+          <NotificationToast
+            key={notification.id}
+            notification={notification}
+            onClose={() => removeNotification(notification.id)}
+          />
+        ))}
+      </div>
       <main className="pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <DashboardHeader
@@ -266,6 +396,44 @@ export default function DocenteDashboard() {
             userCode={user.codigo_usuario}
             icon={GraduationCap}
           />
+
+          {/* <button
+            onClick={() => {
+              const nuevoReporte: Report = {
+                id: Date.now(),
+                labId: "LAB-TEST",
+                equipmentId: "PC-99",
+                issue: "Reporte de prueba",
+                reportedBy: "Test User",
+                reportedEmail: "test@univalle.edu",
+                reportedDate: new Date().toLocaleString("es-BO"),
+                status: "new", 
+                priority: "high",
+                description: "Este es un reporte de prueba",
+                reporter: {
+                  nombre: "Test User",
+                  correo: "test@univalle.edu",
+                  codigo: "00000",
+                },
+                comments: [],
+                createdAt: new Date(),
+              };
+
+              setReports((prev) => [...prev, nuevoReporte]);
+              console.log(" Reporte de prueba agregado");
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg mb-4"
+          >
+             Agregar Reporte de Prueba
+          </button> */}
+
+          {notifications.length > 0 && (
+            <div className="bg-[#a00000] text-white px-6 py-3 rounded-full font-bold animate-pulse shadow-lg mb-3">
+              🔔 {notifications.length} notificación
+              {notifications.length !== 1 ? "es" : ""} nueva
+              {notifications.length !== 1 ? "s" : ""}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <StatCard
               icon={AlertCircle}
@@ -293,8 +461,7 @@ export default function DocenteDashboard() {
           <div className="bg-white rounded-2xl border-2 border-[#767676] p-8 mb-8 shadow-lg space-y-6">
             <div className="flex items-center gap-3 mb-8">
               <h2 className="text-3xl font-bold text-[#a00000]">
-                Reportes Recientes (
-                {reports.filter((r) => r.status === "new").length} nuevos)
+                Reportes Recientes ({stats.nuevos} nuevos)
               </h2>
             </div>
             {reports
@@ -460,7 +627,7 @@ export default function DocenteDashboard() {
           </div>
         </div>
       </main>
-      {selectedReport && (
+       {selectedReport && (
         <ReportModal
           report={selectedReport}
           onClose={handleCloseModal}

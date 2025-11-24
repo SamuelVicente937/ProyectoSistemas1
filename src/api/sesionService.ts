@@ -38,7 +38,7 @@ export const sesionService = {
   },
 
   async cerrarSesion(idSesion: number) {
-    const response = await api.put(`/docente/sesion/${idSesion}/cerrar`); // 👈 Actualizado
+    const response = await api.put(`/docente/sesion/${idSesion}/cerrar`); 
     return response.data;
   },
 

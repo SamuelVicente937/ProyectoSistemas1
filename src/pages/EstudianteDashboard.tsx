@@ -60,7 +60,7 @@ interface ProblemaReportado {
   equipo: string;
   problema: string;
   descripcion: string;
-  estado: "pendiente" | "en_revision" | "resuelto";
+  estado: "pendiente" | "en_proceso" | "resuelto";
 }
 
 export default function EstudianteDashboard() {
@@ -96,20 +96,12 @@ export default function EstudianteDashboard() {
     if (showLoading) setLoading(true);
 
     try {
-      // 1️⃣ Cargar historial de asistencias
+      // Cargar historial de asistencias
       const historialData = await asistenciaService.obtenerMisAsistencias();
-      console.log("📋 Historial:", historialData);
-
       setHistorial(historialData.asistencias || []);
-      setEstadisticas({
-        materias_inscritas: 0, // Esto lo calcularemos del resumen
-        asistencias_registradas: historialData.total_asistencias || 0,
-        porcentaje_asistencia: 0, // Lo calcularemos del resumen
-      });
 
-      // 2️⃣ Cargar resumen por materia (para estadísticas)
+      // Cargar resumen por materia (estadísticas)
       const resumenData = await asistenciaService.obtenerResumenPorMateria();
-      console.log("📊 Resumen por materia:", resumenData);
 
       if (resumenData.materias && resumenData.materias.length > 0) {
         const totalMaterias = resumenData.materias.length;
@@ -119,21 +111,20 @@ export default function EstudianteDashboard() {
             0
           ) / totalMaterias;
 
-        setEstadisticas((prev) => ({
-          ...prev,
+        setEstadisticas({
           materias_inscritas: totalMaterias,
+          asistencias_registradas: historialData.total_asistencias || 0,
           porcentaje_asistencia: Math.round(promedioAsistencia),
-        }));
+        });
       }
 
-      // 3️⃣ TODO: Cargar clases de hoy
-      // Esto requiere un endpoint adicional en el backend
-      // Por ahora dejamos array vacío
-      setClasesHoy([]);
+      // Cargar clases de hoy ✅
+      const clasesData = await asistenciaService.obtenerClasesHoy();
+      setClasesHoy(clasesData.clases_hoy || []);
 
-      // 4️⃣ TODO: Cargar reportes de problemas
-      // Esto requiere endpoint en el backend
-      setProblemasReportados([]);
+      // Cargar reportes de problemas ✅
+      const reportesData = await asistenciaService.obtenerMisReportes();
+      setProblemasReportados(reportesData.reportes || []);
     } catch (error: any) {
       console.error("❌ Error al cargar datos:", error);
       if (error.response?.status === 401) {
@@ -144,7 +135,7 @@ export default function EstudianteDashboard() {
       if (showLoading) setLoading(false);
     }
   };
-  const getEstadoBadge = (estado: "pendiente" | "en_revision" | "resuelto") => {
+  const getEstadoBadge = (estado: "pendiente" | "en_proceso" | "resuelto") => {
     switch (estado) {
       case "pendiente":
         return {
@@ -152,7 +143,7 @@ export default function EstudianteDashboard() {
           icon: <Clock className="h-4 w-4" />,
           label: "Pendiente",
         };
-      case "en_revision":
+      case "en_proceso":
         return {
           color: "border-yellow-500 text-white bg-yellow-500",
           icon: <AlertCircle className="h-4 w-4" />,
@@ -402,7 +393,7 @@ export default function EstudianteDashboard() {
                   🔴{" "}
                   {
                     problemasReportados.filter(
-                      (p) => p.estado === "en_revision"
+                      (p) => p.estado === "en_proceso"
                     ).length
                   }{" "}
                   En Revisión
@@ -466,7 +457,7 @@ export default function EstudianteDashboard() {
                               Esperando revisión del personal de cómputo
                             </span>
                           )}
-                          {reporte.estado === "en_revision" && (
+                          {reporte.estado === "en_proceso" && (
                             <span className="text-xs text-yellow-600 font-semibold">
                               El personal está trabajando en resolver el
                               problema

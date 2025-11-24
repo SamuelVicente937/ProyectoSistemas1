@@ -73,12 +73,11 @@ const RegistroAsistencia = () => {
       setLoading(true);
       console.log("🔍 Buscando sesión con token:", token);
 
-      // 1. Obtener datos de la sesión
       const sesionData = await sesionService.obtenerSesionPorToken(token!);
       console.log("✅ Sesión cargada:", sesionData);
       setSesion(sesionData.sesion);
 
-      // 2. Verificar si ya registró asistencia (solo si está autenticado)
+      
       try {
         const miAsistencia = await asistenciaService.verificarMiAsistencia(
           token!
@@ -90,7 +89,7 @@ const RegistroAsistencia = () => {
           setAsistenciaExistente(miAsistencia.asistencia);
         }
       } catch (err) {
-        // Si no está autenticado o no hay asistencia, continuar normal
+        
         console.log("ℹ️ No hay asistencia previa registrada o no autenticado");
       }
     } catch (err: any) {
@@ -129,18 +128,16 @@ const RegistroAsistencia = () => {
         id_equipo: selectedEquipment,
       };
 
-      // Si hay fallas, agregar observaciones
+    
       if (equipmentState === "con_fallas") {
         payload.tipo_problema = tipoProblema;
         payload.observaciones = problemDescription.trim();
       }
 
-      // 👇 Usar asistenciaService para registrar
       const response = await asistenciaService.registrarAsistencia(payload);
 
       console.log("✅ Asistencia registrada:", response);
 
-      // Preparar datos para pantalla de éxito
       const equipoSeleccionado = sesion?.equipos.find(
         (e) => e.id_equipo === selectedEquipment
       );
@@ -148,7 +145,7 @@ const RegistroAsistencia = () => {
       setSuccessData({
         equipmentCode:
           equipoSeleccionado?.codigo_equipo || response.asistencia.equipo,
-        horaRegistro: response.asistencia.hora_registro, // 👈 Usar hora del backend
+        horaRegistro: response.asistencia.hora_registro,
       });
 
       setStage("success");
@@ -448,7 +445,6 @@ const RegistroAsistencia = () => {
             </div>
           )}
 
-          {/* Advertencia importante */}
           <div className="bg-red-100 border-l-4 border-[#a00000] rounded-lg p-4 mb-8 flex gap-3">
             <AlertCircle className="w-6 h-6 text-[#a00000] flex-shrink-0 mt-2.5" />
             <p className="text-[#767676] font-semibold text-sm">
@@ -458,9 +454,7 @@ const RegistroAsistencia = () => {
             </p>
           </div>
 
-          {/* FORMULARIO DE REGISTRO */}
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Selección de equipos */}
             <div>
               <label className="block text-sm font-black text-[#a00000] uppercase tracking-wider mb-4">
                 Selecciona tu equipo
@@ -510,7 +504,6 @@ const RegistroAsistencia = () => {
               </div>
             </div>
 
-            {/* Estado del equipo */}
             <div>
               <label className="block text-sm font-black text-[#a00000] uppercase tracking-wider mb-4">
                 Estado del equipo
@@ -546,7 +539,6 @@ const RegistroAsistencia = () => {
               </div>
             </div>
 
-            {/* 👇 NUEVA SECCIÓN: Tipo de problema - solo si hay fallas */}
             {equipmentState === "con_fallas" && (
               <div>
                 <label className="block text-sm font-black text-[#a00000] uppercase tracking-wider mb-4">
@@ -640,7 +632,6 @@ const RegistroAsistencia = () => {
               </div>
             )}
 
-            {/* Descripción del problema */}
             <div>
               <label className="block text-sm font-black text-[#a00000] uppercase tracking-wider mb-4">
                 Describe el problema{" "}
@@ -666,7 +657,7 @@ const RegistroAsistencia = () => {
                 </p>
               )}
             </div>
-            {/* Botón de envío */}
+
             <button
               type="submit"
               disabled={submitting || !selectedEquipment}
