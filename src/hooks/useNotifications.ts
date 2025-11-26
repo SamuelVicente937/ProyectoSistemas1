@@ -4,8 +4,10 @@ import { useState, useCallback, useRef } from 'react';
 export interface Notification {
   id: number;
   message: string;
+  title: string;
   type: 'new_report' | 'status_change' | 'comment';
   timestamp: Date;
+  read: boolean;
 }
 
 export const useNotifications = () => {
@@ -21,11 +23,13 @@ export const useNotifications = () => {
     if (currentCount > previousCountRef.current) {
       const diff = currentCount - previousCountRef.current;
       
-      const notification: Notification = {
+       const notification: Notification = {
         id: Date.now(),
+        title: "Nuevo Reporte", // nuevo campo
         message: `${diff} nuevo${diff > 1 ? 's' : ''} reporte${diff > 1 ? 's' : ''} sin atender`,
         type: 'new_report',
         timestamp: new Date(),
+        read: false, // nuevo campo
       };
 
       console.log('Creando notificación:', notification);

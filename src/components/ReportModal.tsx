@@ -25,9 +25,9 @@ interface Comment {
   content: string;
 }
 interface Reporter {
-  name: string;
-  email: string;
-  code: string;
+  nombre: string;
+  codigo: string;
+  correo: string;
 }
 interface ReportModalProps {
   report: Report;
@@ -97,7 +97,7 @@ const ReportModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50  backdrop-blur-sm z-50 overflow-y-auto">
       <div className="min-h-screen flex items-center justify-center p-4 py-8">
         <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden animate-scale-in border-2 border-[#767676]">
           <div className="flex items-center justify-between px-7 py-4 border-b-2 border-[#767676]">
@@ -180,13 +180,13 @@ const ReportModal = ({
                 <div>
                   <p className="text-sm text-[#767676] font-semibold">Nombre</p>
                   <p className="text-gray-900 font-medium">
-                    {report.reporter.name}
+                    {report.reporter.nombre}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-[#767676] font-semibold">Correo</p>
                   <p className="text-gray-900 font-medium">
-                    {report.reporter.email}
+                    {report.reporter.correo}
                   </p>
                 </div>
                 <div>
@@ -194,7 +194,7 @@ const ReportModal = ({
                     Código Estudiante
                   </p>
                   <p className="text-gray-900 font-medium">
-                    {report.reporter.code}
+                    {report.reporter.codigo}
                   </p>
                 </div>
               </div>

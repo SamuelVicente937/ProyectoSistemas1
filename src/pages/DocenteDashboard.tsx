@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../api/authService";
 import {
@@ -8,14 +8,9 @@ import {
   Navbar,
   StatCard,
   FormLink,
+  ListaAsistenciaModal,
 } from "../components";
-import {
-  BookOpen,
-  GraduationCap,
-  Link2,
-  User,
-  Users,
-} from "lucide-react";
+import { BookOpen, GraduationCap, Link2, User, Users } from "lucide-react";
 import type { FormData } from "../components/FormLink";
 import { sesionService } from "../api/sesionService";
 import DashboardHeader from "../components/DashboardHeader";
@@ -54,6 +49,9 @@ export default function DocenteDashboard() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showListModal, setShowListModal] = useState(false);
+  const [listData, setListData] = useState<any>(null);
+  const [loadingList, setLoadingList] = useState(false);
 
   const [stats, setStats] = useState<Stats>({
     clases_hoy: 0,
@@ -152,8 +150,8 @@ export default function DocenteDashboard() {
         observaciones: formData.observaciones,
       });
 
-      console.log("2. Response recibido:", response); 
-      console.log("3. response.sesion:", response.sesion); 
+      console.log("2. Response recibido:", response);
+      console.log("3. response.sesion:", response.sesion);
       console.log("4. showSuccess antes:", showSuccess);
       if (response && response.sesion) {
         console.log("5. Entrando al if - seteando enlaceGenerado");
@@ -189,6 +187,91 @@ export default function DocenteDashboard() {
     const enlaceCompleto = `${window.location.origin}/asistencia/${token}`;
     navigator.clipboard.writeText(enlaceCompleto);
     alert("Enlace copiado al portapapeles");
+  };
+
+  const handleShowListModal = async (idSesion: number) => {
+    try {
+      setLoadingList(true);
+      const data = await sesionService.getListaAsistencia(idSesion);
+      setListData(data);
+      setShowListModal(true);
+    } catch (error: any) {
+      console.error("Error al cargar la lista de asistencia:", error);
+      alert(
+        error.response?.data?.message ||
+          "Error al cargar la lista de asistencia"
+      );
+    } finally {
+      setLoadingList(false);
+    }
+  };
+
+  const handleDescargarPDF = async () => {
+    if (!listData) return;
+
+    try {
+      const loadingToast = document.createElement("div");
+      loadingToast.className =
+        "fixed top-4 right-4 bg-[#800000] text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold";
+      loadingToast.textContent = "Generando PDF...";
+      document.body.appendChild(loadingToast);
+
+      await sesionService.downloadPDFList(listData.sesion.id_sesion);
+
+      loadingToast.className =
+        "fixed top-4 right-4 bg-[#a00000] text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold";
+      loadingToast.textContent = "PDF descargado exitosamente";
+
+      setTimeout(() => {
+        loadingToast.remove();
+      }, 3000);
+    } catch (error: any) {
+      console.error("Error al descargar PDF:", error);
+
+      // Mostrar mensaje de error
+      const errorToast = document.createElement("div");
+      errorToast.className =
+        "fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold";
+      errorToast.textContent = "❌ Error al descargar PDF";
+      document.body.appendChild(errorToast);
+
+      setTimeout(() => {
+        errorToast.remove();
+      }, 3000);
+    }
+  };
+
+  const handleDescargarExcel = async () => {
+    if (!listData) return;
+    try {
+      const loadingToast = document.createElement("div");
+      loadingToast.className =
+        "fixed top-4 right-4 bg-[#800000] text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold";
+      loadingToast.textContent = "Generando Excel...";
+      document.body.appendChild(loadingToast);
+
+       await sesionService.downloadExcelList(listData.sesion.id_sesion);
+      loadingToast.className =
+        "fixed top-4 right-4 bg-[#a00000] text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold";
+      loadingToast.textContent = "Excel descargado exitosamente";
+
+      setTimeout(() => {
+        loadingToast.remove();
+      }, 3000);
+    } catch (error: any) {
+      console.error("Error al descargar excel:", error);
+
+      // Mostrar mensaje de error
+      const errorToast = document.createElement("div");
+      errorToast.className =
+        "fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold";
+      errorToast.textContent = "❌ Error al descargar Excel";
+      document.body.appendChild(errorToast);
+
+      setTimeout(() => {
+        errorToast.remove();
+      }, 3000);
+    }
   };
 
   if (!user || loading) {
@@ -328,12 +411,23 @@ export default function DocenteDashboard() {
                           )}
                         </td>
                         <td className="py-4 px-4 text-center">
-                          <button
-                            onClick={() => copiarEnlace(sesion.enlace_token)}
-                            className="px-4 py-2 bg-[#a00000] text-white rounded-lg text-sm font-bold hover:bg-[#8a0000] transition-all duration-300 transform hover:scale-105 shadow-md"
-                          >
-                            Copiar
-                          </button>
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() =>
+                                handleShowListModal(sesion.id_sesion)
+                              }
+                              disabled={loadingList}
+                              className="px-4 py-2 bg-[#a00000] text-white rounded-lg text-sm font-bold hover:bg-[#8a0000] transition-all duration-300 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {loadingList ? "Cargando..." : "Ver Lista"}
+                            </button>
+                            <button
+                              onClick={() => copiarEnlace(sesion.enlace_token)}
+                              className="px-4 py-2 bg-[#a00000] text-white rounded-lg text-sm font-bold hover:bg-[#8a0000] transition-all duration-300 transform hover:scale-105 shadow-md"
+                            >
+                              Copiar
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -353,6 +447,15 @@ export default function DocenteDashboard() {
             </div>
           </div>
         </div>
+        <ListaAsistenciaModal
+          isOpen={showListModal}
+          onClose={() => setShowListModal(false)}
+          sesion={listData?.sesion || null}
+          asistencias={listData?.asistencias || []}
+          totalEstudiantes={listData?.total_estudiantes || 0}
+          onDescargarPDF={handleDescargarPDF}
+          onDescargarExcel={handleDescargarExcel}
+        />
       </main>
 
       <Modal

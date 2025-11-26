@@ -218,7 +218,11 @@ export default function DocenteDashboard() {
         status: r.status,
         priority: r.priority,
         description: r.description,
-        reporter: r.reporter,
+        reporter: {
+          nombre: r.reporter.nombre,
+          codigo: r.reporter.codigo,
+          correo: r.reporter.correo,
+        },
         comments: r.comments || [],
         createdAt: new Date(r.createdAt),
       }));
@@ -284,7 +288,7 @@ export default function DocenteDashboard() {
 
   const handleAddComment = async (reportId: number, commentText: string) => {
     try {
-      console.log(`💬 Agregando comentario al reporte ${reportId}`);
+      console.log(`Agregando comentario al reporte ${reportId}`);
 
       const response = await personalService.agregarComentario(
         reportId,
