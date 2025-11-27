@@ -77,19 +77,31 @@ const RegistroAsistencia = () => {
       console.log("✅ Sesión cargada:", sesionData);
       setSesion(sesionData.sesion);
 
-      
       try {
         const miAsistencia = await asistenciaService.verificarMiAsistencia(
           token!
         );
-        console.log("✅ Mi asistencia:", miAsistencia);
-
         if (miAsistencia.registrado) {
           setYaRegistro(true);
           setAsistenciaExistente(miAsistencia.asistencia);
+          return; // 👈 Salir temprano si ya registró
+        }
+
+        const clasesData = await asistenciaService.obtenerClasesHoy();
+        const perteneceAlGrupo = clasesData.clases_hoy.some(
+          (clase: any) =>
+            clase.materia === sesionData.sesion.materia &&
+            clase.grupo === sesionData.sesion.grupo
+        );
+
+        if (!perteneceAlGrupo) {
+          setError(
+            `No estás inscrito en el grupo ${sesionData.sesion.grupo} de esta materia. Solo los estudiantes inscritos en este grupo pueden registrar su asistencia.`
+          );
+          setSesion(null); // 👈 Limpiar sesión para que muestre error
+          return;
         }
       } catch (err) {
-        
         console.log("ℹ️ No hay asistencia previa registrada o no autenticado");
       }
     } catch (err: any) {
@@ -128,7 +140,6 @@ const RegistroAsistencia = () => {
         id_equipo: selectedEquipment,
       };
 
-    
       if (equipmentState === "con_fallas") {
         payload.tipo_problema = tipoProblema;
         payload.observaciones = problemDescription.trim();

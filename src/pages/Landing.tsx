@@ -3,6 +3,7 @@ import {
   ArrowRight,
   BarChart,
   CheckCircle,
+  ChevronDown,
   Code2,
   Lock,
   Users,
@@ -13,7 +14,40 @@ import { useState } from "react";
 
 const Landing = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
+  const faqs = [
+    {
+      id: 1,
+      question: "¿Cómo registro mi asistencia en el laboratorio?",
+      answer:
+        "Tu docente generará un enlace único para cada sesión de clase. Al ingresar al enlace, selecciona el equipo donde estás trabajando y confirma tu asistencia. El registro es instantáneo y solo toma unos segundos.",
+    },
+    {
+      id: 2,
+      question: "¿Puedo cambiar de equipo después de registrar mi asistencia?",
+      answer:
+        "No, una vez registrada tu asistencia en un equipo específico, no puedes cambiarla. Asegúrate de seleccionar el equipo correcto al momento de registrarte.",
+    },
+    {
+      id: 3,
+      question: "¿Hasta cuándo puedo registrar mi asistencia?",
+      answer:
+        "Cada enlace de asistencia tiene una validez de 2 horas desde que el docente lo genera. Después de ese tiempo, el enlace expira y no podrás registrar tu asistencia para esa sesión.",
+    },
+    {
+      id: 4,
+      question: "¿Cómo veo mi historial de asistencias?",
+      answer:
+        "En tu dashboard de estudiante encontrarás una sección con todas tus asistencias registradas, organizadas por fecha y materia. También puedes ver tu porcentaje de asistencia por cada materia.",
+    },
+    {
+      id: 5,
+      question: "¿Qué pasa si olvidé registrar mi asistencia?",
+      answer:
+        "Si no registraste tu asistencia durante la clase, no podrás hacerlo después ya que el enlace expira. Contacta directamente con tu docente para resolver la situación.",
+    },
+  ];
   return (
     <div className="min-h-screen bg-white flex flex-col scroll-smooth">
       <Navbar />
@@ -37,7 +71,7 @@ const Landing = () => {
                 Inicia sesión y gestiona tus prácticas en los laboratorios de
                 forma rápida y sencilla.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center ">
                 {/* <Link to="/login">
                   <Button
                     variant="secondary"
@@ -47,18 +81,21 @@ const Landing = () => {
                   </Button>
                   <ArrowRight className="hidden sm:inline-block ml-2 w-10 h-10 group-hover:translate-x-1 transition-transform" />
                 </Link> */}
-                <Button
+                {/* <Button
                   variant="secondary"
                   className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-lg sm:text-xl group"
                   onClick={() => setIsLoginOpen(true)}
                 >
-                  Iniciar Sesion
+                  Iniciar Sesión
                   <ArrowRight className="inline-block ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                </Button>
-                <a href="#features">
-                  <button className="px-12 sm:px-12 md:px-12 py-4 sm:py-5 md:py-6 text-lg sm:text-xl font-semibold text-white border-2 border-white rounded-lg hover:bg-white hover:text-[#a00000] transition-all duration-300 transform hover:scale-105">
+                </Button> */}
+                <a href="#faq">
+                  <Button
+                    variant="secondary"
+                    className="px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-lg sm:text-xl group"
+                  >
                     Aprende más
-                  </button>
+                  </Button>
                 </a>
               </div>
             </div>
@@ -217,6 +254,51 @@ const Landing = () => {
         </div>
       </section>
 
+      <section id="faq" className="pt-50 md:pt-50 pb-10 px-4 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-bold text-[#767676] mb-4">
+              Preguntas <span className="text-[#a00000]">Frecuentes</span>
+            </h2>
+            <p className="text-xl text-[#767676]/80">
+              Encuentra respuestas a las preguntas más comunes sobre nuestro
+              sistema
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, index) => (
+              <div
+                key={faq.id}
+                className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
+              >
+                <button
+                  onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                  className="w-full px-8 py-6 flex items-center justify-between hover:bg-gray-50 transition-colors duration-300"
+                >
+                  <h3 className="text-lg font-bold text-[#767676] text-left">
+                    {faq.question}
+                  </h3>
+                  <ChevronDown
+                    className={`w-6 h-6 text-[#a00000] flex-shrink-0 ml-4 transition-transform duration-300 ${
+                      openFAQ === index ? "transform rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {openFAQ === index && (
+                  <div className="border-t border-gray-200 px-8 py-6 bg-gradient-to-br from-gray-50 to-white animate-slide-up">
+                    <p className="text-lg text-[#767676]/80 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="contact" className="pt-45 md:pt-45 pb-15 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-bold text-[#767676] mb-6 ">
@@ -248,7 +330,7 @@ const Landing = () => {
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
       />
-      <Footer variant="full"/>
+      <Footer variant="full" />
     </div>
   );
 };

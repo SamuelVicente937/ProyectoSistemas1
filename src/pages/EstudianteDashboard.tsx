@@ -139,19 +139,19 @@ export default function EstudianteDashboard() {
     switch (estado) {
       case "pendiente":
         return {
-          color: "border-red-600 text-white bg-red-600",
+          color: "border-[#a00000] text-white bg-[#a00000]",
           icon: <Clock className="h-4 w-4" />,
           label: "Pendiente",
         };
       case "en_proceso":
         return {
-          color: "border-yellow-500 text-white bg-yellow-500",
+          color: "border-gray-200 text-[#a00000] bg-gray-200",
           icon: <AlertCircle className="h-4 w-4" />,
           label: "En Revisión",
         };
       case "resuelto":
         return {
-          color: "border-green-600 text-white bg-green-600",
+          color: "border-gray-400 text-white bg-gray-400",
           icon: <CheckCircle2 className="h-4 w-4" />,
           label: "Resuelto",
         };
@@ -220,10 +220,10 @@ export default function EstudianteDashboard() {
                   <span
                     className={`absolute top-3 right-3 text-sm font-semibold px-3 py-1 rounded-full border flex items-center gap-1 ${
                       clase.ya_registro_asistencia
-                        ? "border-green-600 text-white bg-green-600"
+                        ? "border-gray-200 text-[#a00000] bg-gray-200"
                         : clase.tiene_sesion_activa
                         ? "border-[#a00000] text-white bg-[#a00000] animate-pulse"
-                        : "border-gray-400 text-gray-600 bg-gray-100"
+                        : "border-gray-400 text-white bg-gray-400 animate-pulse"
                     }`}
                   >
                     {clase.ya_registro_asistencia ? (
@@ -398,8 +398,8 @@ export default function EstudianteDashboard() {
                   }{" "}
                   En Revisión
                 </span>
-                <span className="px-3 py-1 bg-[#a00000] text-white rounded-full font-bold">
-                  ◻️{" "}
+                <span className="px-3 py-1 bg-gray-400 text-white rounded-full font-bold">
+                  ⚪{" "}
                   {
                     problemasReportados.filter((p) => p.estado === "resuelto")
                       .length
@@ -453,18 +453,18 @@ export default function EstudianteDashboard() {
 
                         <div className="flex items-center gap-2 pt-2">
                           {reporte.estado === "pendiente" && (
-                            <span className="text-xs text-red-600 font-semibold">
+                            <span className="text-xs text-[#a00000] font-semibold">
                               Esperando revisión del personal de cómputo
                             </span>
                           )}
                           {reporte.estado === "en_proceso" && (
-                            <span className="text-xs text-yellow-600 font-semibold">
+                            <span className="text-xs text-[#a00000] font-semibold">
                               El personal está trabajando en resolver el
                               problema
                             </span>
                           )}
                           {reporte.estado === "resuelto" && (
-                            <span className="text-xs text-green-600 font-semibold">
+                            <span className="text-xs text-[#a00000] font-semibold">
                               Problema resuelto exitosamente
                             </span>
                           )}

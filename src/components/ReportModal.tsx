@@ -59,29 +59,29 @@ const ReportModal = ({
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "critical":
-        return "bg-red-100 text-red-700 border-red-300";
-      case "high":
-        return "bg-orange-100 text-orange-700 border-orange-300";
-      case "medium":
-        return "bg-yellow-100 text-yellow-700 border-yellow-300";
-      case "low":
-        return "bg-green-100 text-green-700 border-green-300";
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-300";
-    }
-  };
+  // const getPriorityColor = (priority: string) => {
+  //   switch (priority) {
+  //     case "critical":
+  //       return "bg-red-100 text-red-700 border-red-300";
+  //     case "high":
+  //       return "bg-orange-100 text-orange-700 border-orange-300";
+  //     case "medium":
+  //       return "bg-yellow-100 text-yellow-700 border-yellow-300";
+  //     case "low":
+  //       return "bg-green-100 text-green-700 border-green-300";
+  //     default:
+  //       return "bg-gray-100 text-gray-700 border-gray-300";
+  //   }
+  // };
 
   const getStatusColor = (status: ReportStatus) => {
     switch (status) {
       case "new":
         return "bg-[#a00000]";
       case "in_review":
-        return "bg-[#f59e0b]";
+        return "bg-gray-400";
       case "resolved":
-        return "bg-[#10b981]";
+        return "bg-[#a00000]";
     }
   };
 
@@ -90,7 +90,7 @@ const ReportModal = ({
       case "new":
         return "Nuevo";
       case "in_review":
-        return "En Revisión";
+        return "En Revisión ";
       case "resolved":
         return "Resuelto";
     }
@@ -143,7 +143,7 @@ const ReportModal = ({
                     {report.reportedDate}
                   </p>
                 </div>
-                <div>
+                {/* <div>
                   <p className="text-sm text-[#767676] font-semibold mb-1">
                     Prioridad
                   </p>
@@ -154,7 +154,7 @@ const ReportModal = ({
                   >
                     {report.priority}
                   </span>
-                </div>
+                </div> */}
               </div>
             </div>{" "}
             <div className="bg-gray-50 border-2 border-[#767676] rounded-2xl p-5">
@@ -225,7 +225,7 @@ const ReportModal = ({
                 {report.status === "in_review" && (
                   <button
                     onClick={() => handleStatusChange("resolved")}
-                    className="px-6 py-3 bg-[#10b981] text-white rounded-xl font-bold hover:bg-[#059669] transition-all duration-300 transform hover:scale-105"
+                    className="px-6 py-3 bg-[#a00000] text-white rounded-xl font-bold hover:bg-[#800000] transition-all duration-300 transform hover:scale-105"
                   >
                     Marcar Resuelto
                   </button>

@@ -85,42 +85,44 @@ const Navbar = ({ variant = "full" }: FooterProps) => {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-md">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="tracking-wide py-0">
-              <img
-                src={logoLabValle}
-                alt="logo-univalle"
-                className="max-h-40 w-auto"
-              />
-            </Link>
-
-            <div className="hidden md:flex items-center space-x-8">
+        <nav className="max-w-[90%] mx-auto px-5 sm:px-6 lg:px-6 ">
+          <div className="hidden md:grid md:grid-cols-3 md:items-center md:gap-4 py-1 ml-16">
+            <div className="flex justify-start ">
+              <Link to="/" className="tracking-wide py-0 mr-2">
+                <img
+                  src={logoLabValle}
+                  alt="logo-univalle"
+                  className="max-h-40 w-auto"
+                />
+              </Link>
+            </div>
+            <div className="flex items-center space-x-6 ml-3 justify-center">
               <a
                 href="#features"
-                className="text-[#767676] hover:text-[#a00000] transition-colors font-medium text-xl"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
               >
                 Caracteristicas
               </a>
               <a
                 href="#about"
-                className="text-[#767676] hover:text-[#a00000] transition-colors font-medium text-xl"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
               >
                 Sobre Nosotros
               </a>
               <a
+                href="#faq"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
+              >
+                Preguntas 
+              </a>
+              <a
                 href="#contact"
-                className="text-[#767676] hover:text-[#a00000] transition-colors font-medium text-xl"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
               >
                 Contactanos!
               </a>
-              <a
-                href="https://enlace.univalle.edu/san/webform/PAutenticar.aspx"
-                target="_blank"
-                className="text-[#767676] hover:text-[#a00000] transition-colors font-medium text-xl"
-              >
-                S.I.U.
-              </a>
+            </div>
+            <div className="flex justify-end">
               <Button
                 variant="primary"
                 className="px-6 py-1"
@@ -129,9 +131,18 @@ const Navbar = ({ variant = "full" }: FooterProps) => {
                 Iniciar Sesion
               </Button>
             </div>
+          </div>
+          <div className="md:hidden flex items-center justify-between">
+            <Link to="/" className="tracking-wide py-0">
+              <img
+                src={logoLabValle}
+                alt="logo-univalle"
+                className="max-h-40 w-auto"
+              />
+            </Link>
 
             <button
-              className="md:hidden text-[#767676] hover:text-[#a00000] transition-colors"
+              className="text-[#767676] hover:text-[#a00000] transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? (
