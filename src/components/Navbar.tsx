@@ -96,28 +96,28 @@ const Navbar = ({ variant = "full" }: FooterProps) => {
                 />
               </Link>
             </div>
-            <div className="flex items-center space-x-6 ml-3 justify-center">
+            <div className="flex items-center space-x-8 justify-between">
               <a
                 href="#features"
-                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-lg"
               >
                 Caracteristicas
               </a>
               <a
                 href="#about"
-                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-lg"
               >
-                Sobre Nosotros
+                Acerca
               </a>
               <a
                 href="#faq"
-                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-lg"
               >
                 Preguntas 
               </a>
               <a
                 href="#contact"
-                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-base"
+                className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-lg"
               >
                 Contactanos!
               </a>

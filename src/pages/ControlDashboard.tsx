@@ -631,7 +631,7 @@ export default function DocenteDashboard() {
           </div>
         </div>
       </main>
-       {selectedReport && (
+      {selectedReport && (
         <ReportModal
           report={selectedReport}
           onClose={handleCloseModal}

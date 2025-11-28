@@ -194,8 +194,8 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-5xl md:text-7xl font-bold text-[#767676] mb-6">
-                Sobre nuestros{" "}
+              <h2 className="text-5xl md:text-6xl font-bold text-[#767676] mb-6">
+                Acerca de nuestros{" "}
                 <span className="text-[#a00000]">Laboratorios</span>
               </h2>
               <p className="text-xl text-[#767676]/80 mb-6 ">
