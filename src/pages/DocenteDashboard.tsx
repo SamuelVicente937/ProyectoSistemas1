@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../api/authService";
 import {
@@ -48,7 +48,7 @@ export default function DocenteDashboard() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  // const [isRefreshing, setIsRefreshing] = useState(false);
   const [showListModal, setShowListModal] = useState(false);
   const [listData, setListData] = useState<any>(null);
   const [loadingList, setLoadingList] = useState(false);
@@ -83,7 +83,7 @@ export default function DocenteDashboard() {
     const interval = setInterval(() => {
       console.log("Actualizannodoooo");
       loadData(false);
-    }, 10000);
+    }, 45000);
 
     return () => {
       console.log("Limpiando intervalo");
@@ -95,7 +95,7 @@ export default function DocenteDashboard() {
     if (isInitialLoad) {
       setLoading(true);
     } else {
-      setIsRefreshing(true);
+      // setIsRefreshing(true);
     }
 
     try {
@@ -106,7 +106,7 @@ export default function DocenteDashboard() {
       if (isInitialLoad) {
         setLoading(false);
       } else {
-        setIsRefreshing(false);
+        // setIsRefreshing(false);
       }
     }
   };

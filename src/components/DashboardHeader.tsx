@@ -1,4 +1,4 @@
-import { User, type LucideIcon } from "lucide-react";
+import {User2, type LucideIcon } from "lucide-react";
 
 interface DashboardHeaderProps{
     userName: string;
@@ -11,7 +11,7 @@ const DashboardHeader = ({
     userName,
     userEmail,
     userCode,
-    icon: Icon = User,   
+    icon: IconComponent = User2,   
 }: DashboardHeaderProps) =>{
     return(
       <div className="bg-gradient-to-r from-[#767676] to-[#a00000] rounded-2xl p-8 mb-8 shadow-xl">
@@ -39,7 +39,7 @@ const DashboardHeader = ({
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent rounded-3xl blur-2xl animate-pulse"></div>
                 <div className="bg-transparent p-6 relative z-10">
-                  <User className="w-20 h-20 text-white" strokeWidth={1.5} />
+                  <IconComponent className="w-20 h-20 text-white" strokeWidth={1.5} />
                 </div>
               </div>
             </div>

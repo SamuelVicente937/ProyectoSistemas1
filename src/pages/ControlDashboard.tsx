@@ -181,7 +181,7 @@ export default function DocenteDashboard() {
     intervalRef.current = setInterval(() => {
       console.log("🔄 Auto-refresh reportes...");
       loadData(false);
-    }, 30000);
+    }, 45000);
 
     return () => {
       if (intervalRef.current) {

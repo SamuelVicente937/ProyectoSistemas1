@@ -4,7 +4,6 @@ import { authService } from "../api/authService";
 import { DashboardHeader, Footer, Navbar, StatCard } from "../components";
 import {
   AlertCircle,
-  Check,
   CheckCircle2,
   Clock,
   GraduationCap,
@@ -88,7 +87,7 @@ export default function EstudianteDashboard() {
     loadData();
     const interval = setInterval(() => {
       loadData(false);
-    }, 30000);
+    }, 45000);
     return () => clearInterval(interval);
   }, [navigate]);
 

@@ -50,7 +50,7 @@ const ImageCarousel = ({
   interval = 5000,
 }: ImageCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  // const [isTransitioning, setIsTransitioning] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
@@ -65,17 +65,17 @@ const ImageCarousel = ({
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-    setIsTransitioning(true);
+    // setIsTransitioning(true);
   };
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
-    setIsTransitioning(true);
+    // setIsTransitioning(true);
   };
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
-    setIsTransitioning(true);
+    // setIsTransitioning(true);
   };
 
   return (
