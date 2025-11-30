@@ -5,6 +5,7 @@ import {
   DashboardHeader,
   Footer,
   Navbar,
+  ReportesUsoSection,
   ReportModal,
   StatCard,
 } from "../components";
@@ -14,7 +15,7 @@ import {
   Clock,
   Eye,
   Filter,
-  GraduationCap,
+  MonitorCog,
   Search,
 } from "lucide-react";
 import { useNotifications } from "../hooks/useNotifications";
@@ -157,7 +158,7 @@ interface Comment {
 //   },
 // ];
 
-export default function DocenteDashboard() {
+export default function ControlDashboard() {
   const [reports, setReports] = useState<Report[]>([]);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -398,7 +399,7 @@ export default function DocenteDashboard() {
             userName={`${user.nombres} ${user.apellidos}`}
             userEmail={user.correo}
             userCode={user.codigo_usuario}
-            icon={GraduationCap}
+            icon={MonitorCog}
           />
 
           {/* <button
@@ -629,6 +630,7 @@ export default function DocenteDashboard() {
               </table>
             </div>
           </div>
+          <ReportesUsoSection />
         </div>
       </main>
       {selectedReport && (

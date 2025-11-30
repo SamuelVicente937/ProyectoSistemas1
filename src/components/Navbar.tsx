@@ -25,6 +25,14 @@ const Navbar = ({ variant = "full" }: FooterProps) => {
   };
 
   if (variant === "simple") {
+    const user = authService.getUser();
+
+    // Mapear el tipo de usuario a texto en español
+    const tipoUsuarioTexto = {
+      docente: "Docente",
+      estudiante: "Estudiante",
+      personal: "Personal",
+    };
     return (
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-md">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,7 +46,14 @@ const Navbar = ({ variant = "full" }: FooterProps) => {
             </Link>
 
             <div className="hidden md:flex items-center space-x-8">
-              <div className="bg-transparent p-2 relative z-10 transform hover:scale-105 transition-transform duration-300">
+              <div className="flex items-center gap-3 bg-transparent p-2 relative z-10 transform hover:scale-105 transition-transform duration-300">
+                {user && (
+                  <div className="flex flex-col">
+                    <span className="text-xl text-gray-500 font-medium">
+                      {tipoUsuarioTexto[user.tipo_usuario]}
+                    </span>
+                  </div>
+                )}
                 <CircleUserRound className="w-14 h-14 text-[#a00000] mt-1" />
               </div>
               <Button
@@ -113,7 +128,7 @@ const Navbar = ({ variant = "full" }: FooterProps) => {
                 href="#faq"
                 className="text-[#767676] hover:text-[#a00000] transition-colors duration-500 font-medium text-lg"
               >
-                Preguntas 
+                Preguntas
               </a>
               <a
                 href="#contact"

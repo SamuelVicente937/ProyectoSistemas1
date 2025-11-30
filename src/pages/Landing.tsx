@@ -10,11 +10,24 @@ import {
 } from "lucide-react";
 import labFoto1 from "../assets/lab-04.webp";
 import Login from "./login";
-import { useState } from "react";
+import React, { useState } from "react";
+import { contactService } from "../api/contactService";
 
 const Landing = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+
+  const [contactForm, setContactForm] = useState({
+    nombre: "",
+    correo: "",
+    tipo_problema: "",
+    descripcion: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const faqs = [
     {
@@ -48,6 +61,55 @@ const Landing = () => {
         "Si no registraste tu asistencia durante la clase, no podrás hacerlo después ya que el enlace expira. Contacta directamente con tu docente para resolver la situación.",
     },
   ];
+
+  const handleContactChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setContactForm({
+      ...contactForm,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage(null);
+
+    try {
+      const response = await contactService.sendContactForm(contactForm);
+
+      setSubmitMessage({
+        type: "success",
+        text:
+          response.message ||
+          "Mensaje enviando correctamente! Te responderemos pronto.",
+      });
+
+      setContactForm({
+        nombre: "",
+        correo: "",
+        tipo_problema: "",
+        descripcion: "",
+      });
+
+      setTimeout(() => {
+        setSubmitMessage(null);
+      }, 5000); // desaparece después de 5 segundos
+    } catch (error: any) {
+      setSubmitMessage({
+        type: "error",
+        text:
+          error.message ||
+          "Hubo un error al enviar el mensaje. Intenta de nuevo.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col scroll-smooth">
       <Navbar />
@@ -254,7 +316,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <section id="faq" className="pt-50 md:pt-50 pb-10 px-4 bg-gray-50">
+      {/* <section id="faq" className="pt-50 md:pt-50 pb-10 px-4 bg-gray-50">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl md:text-6xl font-bold text-[#767676] mb-4">
@@ -297,32 +359,303 @@ const Landing = () => {
             ))}
           </div>
         </div>
+      </section> */}
+
+      <section id="faq" className="pt-50 md:pt-50 pb-10 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* FAQ Section */}
+            <div>
+              <div className="text-center lg:text-left mb-6">
+                <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-4">
+                  ¿Dónde <span className="text-[#a00000]">Encontrarnos?</span>
+                </h2>
+                <p className="text-lg text-[#767676]/80">
+                  Visítanos en nuestras instalaciones
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-gray-200 ">
+                <div className="relative w-full h-[400px] bg-gray-100">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15301.786927978079!2d-68.13910811284177!3d-16.503529499999992!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x915f206782937445%3A0xacceb97486edb698!2sUniversidad%20Privada%20del%20Valle%20Sede%20La%20Paz!5e0!3m2!1ses!2sbo!4v1764464413076!5m2!1ses!2sbo"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Ubicación de la Universidad"
+                    className="absolute inset-0"
+                  ></iframe>
+                </div>
+
+                <div className="p-6 bg-gradient-to-br from-white to-gray-50">
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 bg-[#a00000] rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg
+                          className="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#767676] text-sm">
+                          Dirección
+                        </h4>
+                        <p className="text-[#767676]/80 text-sm">
+                          Av. Argentina 2083, La Paz
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 bg-[#a00000] rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg
+                          className="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#767676] text-sm">
+                          Teléfono
+                        </h4>
+                        <p className="text-[#767676]/80 text-sm">22001800</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 bg-[#a00000] rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg
+                          className="w-4 h-4 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#767676] text-sm">
+                          Horario
+                        </h4>
+                        <p className="text-[#767676]/80 text-sm">
+                          Lunes a Viernes: 8:00 - 12:00 / 15:00 - 19:00
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* FAQ */}
+            <div>
+              <div className="text-center lg:text-left mb-8">
+                <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-4">
+                  Preguntas <span className="text-[#a00000]">Frecuentes</span>
+                </h2>
+                <p className="text-lg text-[#767676]/80">
+                  Encuentra respuestas a las preguntas más comunes sobre nuestro
+                  sistema
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {faqs.map((faq, index) => (
+                  <div
+                    key={faq.id}
+                    className="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300"
+                  >
+                    <button
+                      onClick={() =>
+                        setOpenFAQ(openFAQ === index ? null : index)
+                      }
+                      className="w-full px-6 py-5 flex items-center justify-between hover:bg-gray-50 transition-colors duration-300"
+                    >
+                      <h3 className="text-md font-bold text-[#767676] text-left">
+                        {faq.question}
+                      </h3>
+                      <ChevronDown
+                        className={`w-5 h-5 text-[#a00000] flex-shrink-0 ml-4 transition-transform duration-300 ${
+                          openFAQ === index ? "transform rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {openFAQ === index && (
+                      <div className="border-t border-gray-200 px-6 py-5 bg-gradient-to-br from-gray-50 to-white animate-slide-up">
+                        <p className="text-base text-[#767676]/80 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section id="contact" className="pt-45 md:pt-45 pb-15 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-[#767676] mb-6 ">
-            Iniciar <span className="text-[#a00000]">Sesion</span>
-          </h2>
-          <p className="text-xl text-[#767676]/80 mb-6">
-            {" "}
-            Accede al sistema para registrar tu asistencia y gestionar tus
-            prácticas en los laboratorios de cómputo.
-          </p>
-          {/* <Link to="/login">
-            <Button variant="primary" className="px-12 py-4 text-lg group">
-              Iniciar Sesion
-              <ArrowRight className="inline-block ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link> */}
-          <Button
-            variant="primary"
-            className="px-12 py-4 text-lg group"
-            onClick={() => setIsLoginOpen(true)}
-          >
-            Iniciar Sesion
-            <ArrowRight className="inline-block ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </Button>
+      <section id="contact" className="pt-50 md:pt-55 pb-10 px-4 bg-gray-50">
+        <div className="max-w-3xl mx-auto">
+          <div>
+            <div className="bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-200">
+              <h3 className="text-5xl font-bold text-[#767676] mb-2">
+                ¿Tienes algún <span className="text-[#a00000]">problema?</span>
+              </h3>
+              <p className="text-[#767676]/70 mb-6 text-lg">
+                Envíanos tu consulta y te responderemos a la brevedad
+              </p>
+
+              <form className="space-y-4" onSubmit={handleContactSubmit}>
+                {submitMessage && (
+                  <div
+                    className={`p-4 rounded-xl animate-pulse ${
+                      submitMessage.type === "success"
+                        ? "bg-gray-50 text-[#a00000] border-2 border-[#a00000]"
+                        : "bg-red-50 text-red-800 border-2 border-red-200"
+                    }`}
+                  >
+                    {submitMessage.text}
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-semibold text-[#767676] mb-2">
+                    Nombre completo
+                  </label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    value={contactForm.nombre}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#a00000] focus:outline-none transition-colors"
+                    placeholder="Tu nombre"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#767676] mb-2">
+                    Correo institucional
+                  </label>
+                  <input
+                    type="email"
+                    name="correo"
+                    value={contactForm.correo}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#a00000] focus:outline-none transition-colors"
+                    placeholder="tucorreo@univalle.edu"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#767676] mb-2">
+                    Tipo de problema
+                  </label>
+                  <select
+                    name="tipo_problema"
+                    value={contactForm.tipo_problema}
+                    onChange={handleContactChange}
+                    required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#a00000] focus:outline-none transition-colors bg-white"
+                  >
+                    <option value="">Selecciona una opción</option>
+                    <option value="login">No puedo iniciar sesión</option>
+                    <option value="cuenta">
+                      Problema con cuenta institucional
+                    </option>
+                    <option value="asistencia">
+                      Error al registrar asistencia
+                    </option>
+                    <option value="equipo">
+                      Problema con equipo de laboratorio
+                    </option>
+                    <option value="otro">Otro problema</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#767676] mb-2">
+                    Describe tu problema
+                  </label>
+                  <textarea
+                    name="descripcion"
+                    value={contactForm.descripcion}
+                    onChange={handleContactChange}
+                    required
+                    rows={4}
+                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-[#a00000] focus:outline-none transition-colors resize-none"
+                    placeholder="Por favor, describe detalladamente el problema que estás experimentando..."
+                  ></textarea>
+                </div>
+
+                <Button
+                  variant="primary"
+                  className="w-full py-3 text-base group"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Enviando..." : "Enviar solicitud"}
+                  {!isSubmitting && (
+                    <ArrowRight className="inline-block ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  )}
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="contact" className="pt-12 md:pt-12 pb-6 px-4 bg-gray-50">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center lg:text-center flex flex-col justify-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-5">
+              Iniciar <span className="text-[#a00000]">Sesión</span>
+            </h2>
+            <p className="text-lg text-[#767676]/80 mb-8">
+              Accede al sistema para registrar tu asistencia y gestionar tus
+              prácticas en los laboratorios de cómputo.
+            </p>
+            <div>
+              <Button
+                variant="primary"
+                className="px-12 py-4 text-lg group"
+                onClick={() => setIsLoginOpen(true)}
+              >
+                Iniciar Sesión
+                <ArrowRight className="inline-block ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
       <Login
