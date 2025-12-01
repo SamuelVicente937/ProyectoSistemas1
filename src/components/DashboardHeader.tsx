@@ -14,7 +14,7 @@ const DashboardHeader = ({
     icon: IconComponent = User,   
 }: DashboardHeaderProps) =>{
     return(
-      <div className="bg-gradient-to-r from-[#767676] to-[#a00000] rounded-2xl p-8 mb-8 shadow-xl">
+      <div className="bg-gradient-to-r from-[#800000] to-[#767676] rounded-2xl p-8 mb-8 shadow-xl">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div>
                 <h1 className="text-4xl font-bold text-white mb-4">

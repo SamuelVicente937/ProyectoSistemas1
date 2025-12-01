@@ -813,9 +813,9 @@ export default function DocenteDashboard() {
       </Modal>
       <Footer variant="simple" />
       {showReporteModal && reporteData && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
           <div className="bg-white rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
-            <div className="bg-[#a00000] p-6 text-white">
+            <div className="bg-linear-to-r from-[#a00000] to-[#767676] p-6 text-white">
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">
@@ -928,7 +928,7 @@ export default function DocenteDashboard() {
                             className={`px-2 py-1 rounded-full text-xs font-bold ${
                               est.porcentaje >= 80
                                 ? "bg-gray-400 text-white"
-                                : "bg-red-600 text-white"
+                                : "bg-red-100 text-red-700"
                             }`}
                           >
                             {est.porcentaje}%
@@ -936,11 +936,11 @@ export default function DocenteDashboard() {
                         </td>
                         <td className="py-3 px-4 text-center">
                           {est.estado === "aprobado" ? (
-                            <span className="px-2 py-1 bg-gray-200 text-[#a00000] rounded-full text-xs font-bold">
+                            <span className="px-2 py-1 bg-gray-300 text-[#a00000] rounded-full text-xs font-bold">
                               Aprobado
                             </span>
                           ) : (
-                            <span className="px-2 py-1 bg-gray-200 text-[#a00000] rounded-full text-xs font-bold">
+                            <span className="px-2 py-1 bg-gray-300 text-[#a00000] rounded-full text-xs font-bold">
                               En Riesgo
                             </span>
                           )}

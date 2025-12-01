@@ -5,6 +5,9 @@ import {
   CheckCircle,
   ChevronDown,
   Code2,
+  Cog,
+  Lightbulb,
+  LightbulbIcon,
   Lock,
   Users,
 } from "lucide-react";
@@ -196,7 +199,7 @@ const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-t-4 border-[#a00000]">
               <div className="w-16 h-16 bg-[#a00000] rounded-xl flex items-center justify-center mb-6">
-                <Code2 className="w-8 h-8 text-white" />
+                <Lightbulb className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-[#767676] mb-3">
                 Innovación tecnológica

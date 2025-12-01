@@ -4,14 +4,21 @@ import { authService } from "../api/authService";
 import { DashboardHeader, Footer, Navbar, StatCard } from "../components";
 import {
   AlertCircle,
+  Calendar,
   CheckCircle2,
   Clock,
+  Download,
+  FileText,
   GraduationCap,
   MapPin,
+  TrendingDown,
+  TrendingUp,
   UserRoundCheck,
+  X,
   XCircle,
 } from "lucide-react";
 import { asistenciaService } from "../api/asistenciaService";
+import { estudianteService } from "../api/estudianteService";
 
 interface User {
   id: number;
@@ -62,6 +69,47 @@ interface ProblemaReportado {
   estado: "pendiente" | "en_proceso" | "resuelto";
 }
 
+interface Materia {
+  id_asignatura: number;
+  codigo: string;
+  nombre: string;
+  grupo: string;
+  total_clases: number;
+  asistencias: number;
+  faltas: number;
+  porcentaje: number;
+  estado: "aprobado" | "en_riesgo";
+}
+
+interface ReportePersonalData {
+  estudiante: {
+    codigo: string;
+    nombre_completo: string;
+    correo: string;
+  };
+  filtros: {
+    gestion: number;
+    fecha_inicio: string | null;
+    fecha_fin: string | null;
+  };
+  estadisticas_generales: {
+    total_materias: number;
+    total_clases: number;
+    total_asistencias: number;
+    total_faltas: number;
+    promedio_general: number;
+    materias_aprobadas: number;
+    materias_en_riesgo: number;
+  };
+  materias: Materia[];
+}
+
+interface FiltrosReportePersonal {
+  fecha_inicio?: string;
+  fecha_fin?: string;
+  gestion?: number;
+}
+
 export default function EstudianteDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
@@ -76,6 +124,14 @@ export default function EstudianteDashboard() {
   const [problemasReportados, setProblemasReportados] = useState<
     ProblemaReportado[]
   >([]);
+
+  const [fechaInicioPersonal, setFechaInicioPersonal] = useState("");
+  const [fechaFinPersonal, setFechaFinPersonal] = useState("");
+  const [reportePersonalData, setReportePersonalData] =
+    useState<ReportePersonalData | null>(null);
+  const [showReportePersonalModal, setShowReportePersonalModal] =
+    useState(false);
+  const [loadingReportePersonal, setLoadingReportePersonal] = useState(false);
 
   useEffect(() => {
     const userData = authService.getUser();
@@ -160,6 +216,66 @@ export default function EstudianteDashboard() {
     navigate(`/asistencia/${token}`);
   };
 
+  const handleGenerarReportePersonal = async () => {
+    setLoadingReportePersonal(true);
+
+    try {
+      const filtros: FiltrosReportePersonal = {};
+
+      if (fechaInicioPersonal) {
+        filtros.fecha_inicio = fechaInicioPersonal;
+      }
+
+      if (fechaFinPersonal) {
+        filtros.fecha_fin = fechaFinPersonal;
+      }
+
+      const response = await estudianteService.getReportePersonal(filtros);
+
+      setReportePersonalData(response);
+      setShowReportePersonalModal(true);
+    } catch (error) {
+      console.error("Error al generar reporte personal:", error);
+      alert("Error al generar el reporte");
+    } finally {
+      setLoadingReportePersonal(false);
+    }
+  };
+
+  const handleDescargarExcelReportePersonal = async () => {
+    try {
+      const filtros: FiltrosReportePersonal = {};
+
+      if (fechaInicioPersonal) {
+        filtros.fecha_inicio = fechaInicioPersonal;
+      }
+
+      if (fechaFinPersonal) {
+        filtros.fecha_fin = fechaFinPersonal;
+      }
+
+      await estudianteService.downloadReportePersonalExcel(filtros);
+
+      const toast = document.createElement("div");
+      toast.className =
+        "fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold";
+      toast.textContent = "✓ Excel descargado exitosamente";
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    } catch (error) {
+      console.error("Error al descargar Excel:", error);
+      alert("Error al descargar el reporte");
+    }
+  };
+
+  const limpiarFiltrosPersonal = () => {
+    setFechaInicioPersonal("");
+    setFechaFinPersonal("");
+  };
+
   if (!user || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -171,7 +287,6 @@ export default function EstudianteDashboard() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar variant="simple" />
-
       <main className="pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <DashboardHeader
@@ -391,9 +506,8 @@ export default function EstudianteDashboard() {
                 <span className="px-3 py-1 bg-gray-200 text-[#a00000] rounded-full font-bold">
                   🔴{" "}
                   {
-                    problemasReportados.filter(
-                      (p) => p.estado === "en_proceso"
-                    ).length
+                    problemasReportados.filter((p) => p.estado === "en_proceso")
+                      .length
                   }{" "}
                   En Revisión
                 </span>
@@ -486,10 +600,364 @@ export default function EstudianteDashboard() {
               </div>
             )}
           </div>
+          <div className="bg-white rounded-2xl border-2 border-[#767676] p-8 mt-8 mb-8 shadow-lg">
+            <div className="flex items-center gap-3 mb-6">
+              <FileText className="w-7 h-7 text-[#a00000]" />
+              <h2 className="text-3xl font-bold text-[#767676]">
+                Mi Reporte de Asistencia
+              </h2>
+            </div>
+
+            <div className="bg-gradient-to-br from-[#767676]/5 to-[#a00000]/5 rounded-xl p-6 border-2 border-dashed border-[#767676]">
+              <p className="text-[#767676] font-medium mb-6">
+                Consulta tu reporte personal de asistencia por rango de fechas
+              </p>
+
+              {/* Grid de 3 columnas: Fecha Inicio, Fecha Fin, Botón */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {/* Fecha Inicio */}
+                <div>
+                  <label className="block text-sm font-bold text-[#767676] mb-2 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Fecha Inicio
+                  </label>
+                  <input
+                    type="date"
+                    value={fechaInicioPersonal}
+                    onChange={(e) => setFechaInicioPersonal(e.target.value)}
+                    max={fechaFinPersonal || undefined}
+                    className="w-full px-4 py-3 border-2 border-[#767676] rounded-lg font-semibold text-[#767676] bg-white focus:border-[#a00000] focus:ring-2 focus:ring-[#a00000]/20 transition-all"
+                  />
+                </div>
+
+                {/* Fecha Fin */}
+                <div>
+                  <label className="block text-sm font-bold text-[#767676] mb-2 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Fecha Fin
+                  </label>
+                  <input
+                    type="date"
+                    value={fechaFinPersonal}
+                    onChange={(e) => setFechaFinPersonal(e.target.value)}
+                    min={fechaInicioPersonal || undefined}
+                    className="w-full px-4 py-3 border-2 border-[#767676] rounded-lg font-semibold text-[#767676] bg-white focus:border-[#a00000] focus:ring-2 focus:ring-[#a00000]/20 transition-all"
+                  />
+                </div>
+
+                {/* Botón Ver Reporte */}
+                <div className="flex flex-col gap-2 justify-end">
+                  <button
+                    onClick={handleGenerarReportePersonal}
+                    disabled={loadingReportePersonal}
+                    className="px-6 py-3 bg-[#a00000] text-white rounded-lg font-bold hover:bg-[#8a0000] transition-all duration-300 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  >
+                    {loadingReportePersonal ? "Generando..." : "Ver Mi Reporte"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Fila de botones adicionales */}
+              <div className="flex flex-wrap gap-3 pt-4 border-t-2 border-[#767676]/20">
+                <button
+                  onClick={handleDescargarExcelReportePersonal}
+                  className="px-6 py-3 bg-[#a00000] text-white rounded-lg font-bold hover:bg-[#800000] transition-all duration-300 transform hover:scale-105 shadow-md flex items-center justify-center gap-2"
+                >
+                  <Download className="w-5 h-5" />
+                  Descargar Excel
+                </button>
+
+                {/* Botón Limpiar Filtros */}
+                {(fechaInicioPersonal || fechaFinPersonal) && (
+                  <button
+                    onClick={limpiarFiltrosPersonal}
+                    className="px-6 py-3 bg-gray-500 text-white rounded-lg font-bold hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-md flex items-center gap-2"
+                  >
+                    <X className="w-5 h-5" />
+                    Limpiar Fechas
+                  </button>
+                )}
+              </div>
+
+              {/* Indicador de filtros activos */}
+              {(fechaInicioPersonal || fechaFinPersonal) && (
+                <div className="mt-4 p-4 bg-[#a00000]/10 border-2 border-[#a00000] rounded-lg flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-1">
+                    <Calendar className="w-5 h-5 text-[#a00000]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-[#a00000] mb-1">
+                      Filtros de fecha activos
+                    </p>
+                    <div className="text-sm text-[#767676] font-semibold">
+                      {fechaInicioPersonal && (
+                        <span>
+                          Desde:{" "}
+                          {new Date(
+                            fechaInicioPersonal + "T00:00:00"
+                          ).toLocaleDateString("es-ES", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </span>
+                      )}
+                      {fechaInicioPersonal && fechaFinPersonal && (
+                        <span className="mx-2">•</span>
+                      )}
+                      {fechaFinPersonal && (
+                        <span>
+                          Hasta:{" "}
+                          {new Date(
+                            fechaFinPersonal + "T00:00:00"
+                          ).toLocaleDateString("es-ES", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </main>
-
       <Footer variant="simple" />
+      {showReportePersonalModal && reportePersonalData && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+            {/* Header */}
+            <div className="bg-linear-to-r from-[#a00000] to-[#767676] p-6 text-white">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-2xl font-bold mb-2">
+                    Mi Reporte Personal de Asistencia
+                  </h3>
+                  <p className="text-sm opacity-90">
+                    {reportePersonalData.estudiante.codigo} -{" "}
+                    {reportePersonalData.estudiante.nombre_completo}
+                  </p>
+                  <p className="text-xs opacity-75 mt-1">
+                    Gestión {reportePersonalData.filtros.gestion}
+                    {(reportePersonalData.filtros.fecha_inicio ||
+                      reportePersonalData.filtros.fecha_fin) && (
+                      <span>
+                        {" • "}
+                        {reportePersonalData.filtros.fecha_inicio &&
+                          `Desde ${new Date(
+                            reportePersonalData.filtros.fecha_inicio +
+                              "T00:00:00"
+                          ).toLocaleDateString("es-ES", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}`}
+                        {reportePersonalData.filtros.fecha_inicio &&
+                          reportePersonalData.filtros.fecha_fin &&
+                          " "}
+                        {reportePersonalData.filtros.fecha_fin &&
+                          `Hasta ${new Date(
+                            reportePersonalData.filtros.fecha_fin + "T00:00:00"
+                          ).toLocaleDateString("es-ES", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}`}
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowReportePersonalModal(false)}
+                  className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {/* Estadísticas Generales */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gray-100 p-4 rounded-lg border-2 border-[#a00000]">
+                  <div className="text-2xl font-bold text-[#a00000]">
+                    {reportePersonalData.estadisticas_generales.total_materias}
+                  </div>
+                  <div className="text-xs text-[#a00000] font-semibold">
+                    Materias
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg border-2 border-[#a00000]">
+                  <div className="text-2xl font-bold text-[#a00000]">
+                    {reportePersonalData.estadisticas_generales.total_clases}
+                  </div>
+                  <div className="text-xs text-[#a00000] font-semibold">
+                    Total Clases
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg border-2 border-[#a00000]">
+                  <div className="text-2xl font-bold text-[#a00000]">
+                    {
+                      reportePersonalData.estadisticas_generales
+                        .total_asistencias
+                    }
+                  </div>
+                  <div className="text-xs text-[#a00000] font-semibold">
+                    Asistencias
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg border-2 border-[#a00000]">
+                  <div className="text-2xl font-bold text-[#a00000]">
+                    {reportePersonalData.estadisticas_generales.promedio_general.toFixed(
+                      1
+                    )}
+                    %
+                  </div>
+                  <div className="text-xs text-[#a00000] font-semibold">
+                    Promedio
+                  </div>
+                </div>
+              </div>
+
+              {/* Resumen de estado */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-100 p-4 rounded-lg border-2 border-[#a00000]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm text-[#a00000] font-semibold mb-1">
+                        Materias Aprobadas (≥80%)
+                      </div>
+                      <div className="text-3xl font-bold text-[#a00000]">
+                        {
+                          reportePersonalData.estadisticas_generales
+                            .materias_aprobadas
+                        }
+                      </div>
+                    </div>
+                    <div className="text-[#a00000]">
+                      <TrendingUp className="w-12 h-12" />
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-100 p-4 rounded-lg border-2 border-[#a00000]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm text-[#a00000] font-semibold mb-1">
+                        Materias en Riesgo (&lt;80%)
+                      </div>
+                      <div className="text-3xl font-bold text-[#a00000]">
+                        {
+                          reportePersonalData.estadisticas_generales
+                            .materias_en_riesgo
+                        }
+                      </div>
+                    </div>
+                    <div className="text-[#a00000]">
+                      <TrendingDown className="w-12 h-12" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tabla de Materias */}
+              <div className="overflow-auto max-h-96">
+                <table className="w-full">
+                  <thead className="sticky top-0 bg-gray-50">
+                    <tr className="border-b-2 border-[#767676]">
+                      <th className="text-left py-3 px-4 text-[#a00000] font-bold text-xs uppercase">
+                        Materia
+                      </th>
+                      <th className="text-center py-3 px-4 text-[#a00000] font-bold text-xs uppercase">
+                        Grupo
+                      </th>
+                      <th className="text-center py-3 px-4 text-[#a00000] font-bold text-xs uppercase">
+                        Asistencias
+                      </th>
+                      <th className="text-center py-3 px-4 text-[#a00000] font-bold text-xs uppercase">
+                        Faltas
+                      </th>
+                      <th className="text-center py-3 px-4 text-[#a00000] font-bold text-xs uppercase">
+                        %
+                      </th>
+                      <th className="text-center py-3 px-4 text-[#a00000] font-bold text-xs uppercase">
+                        Estado
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reportePersonalData.materias.map((materia) => (
+                      <tr
+                        key={materia.id_asignatura}
+                        className="border-b border-gray-200 hover:bg-gray-50"
+                      >
+                        <td className="py-3 px-4 text-sm font-semibold text-[#767676]">
+                          {materia.codigo} - {materia.nombre}
+                        </td>
+                        <td className="py-3 px-4 text-center text-sm font-bold text-[#a00000]">
+                          {materia.grupo}
+                        </td>
+                        <td className="py-3 px-4 text-center text-sm font-bold text-[#767676]">
+                          {materia.asistencias}/{materia.total_clases}
+                        </td>
+                        <td className="py-3 px-4 text-center text-sm font-bold text-[#767676]">
+                          {materia.faltas}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-bold flex items-center justify-center gap-1 ${
+                              materia.porcentaje >= 80
+                                ? "bg-gray-400 text-white"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {materia.porcentaje >= 80 ? (
+                              <TrendingUp className="w-3 h-3" />
+                            ) : (
+                              <TrendingDown className="w-3 h-3" />
+                            )}
+                            {materia.porcentaje}%
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          {materia.estado === "aprobado" ? (
+                            <span className="px-2 py-1 bg-gray-300 text-[#a00000] rounded-full text-xs font-bold">
+                              Aprobado
+                            </span>
+                          ) : (
+                            <span className="px-2 py-1 bg-gray-300 text-[#a00000] rounded-full text-xs font-bold">
+                              En Riesgo
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-50 p-4 flex justify-end gap-3 border-t">
+              <button
+                onClick={() => setShowReportePersonalModal(false)}
+                className="px-6 py-2 bg-gray-400 text-white rounded-lg font-bold hover:bg-gray-500 transition-all hover:scale-105 shadow-md"
+              >
+                Cerrar
+              </button>
+              <button
+                onClick={handleDescargarExcelReportePersonal}
+                className="px-6 py-2 bg-[#a00000] text-white rounded-lg font-bold hover:bg-[#8a0000] transition-all hover:scale-105 shadow-md flex items-center gap-2"
+              >
+                <Download className="w-5 h-5" />
+                Descargar Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

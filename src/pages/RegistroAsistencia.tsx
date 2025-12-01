@@ -88,6 +88,17 @@ const RegistroAsistencia = () => {
         }
 
         const clasesData = await asistenciaService.obtenerClasesHoy();
+        console.log("➡️ Materia sesión:", sesionData.sesion.materia);
+        console.log("➡️ Grupo sesión:", sesionData.sesion.grupo);
+
+        console.log("➡️ Clases hoy:");
+        clasesData.clases_hoy.forEach((c: any) => {
+          console.log(`Materia: ${c.materia} | Grupo: "${c.grupo}"`);
+        });
+        console.log("🟦 clasesData:", clasesData);
+        console.log("🟪 clasesData.clases_hoy:", clasesData.clases_hoy);
+        console.log("🟥 Tipo:", Array.isArray(clasesData.clases_hoy));
+
         const perteneceAlGrupo = clasesData.clases_hoy.some(
           (clase: any) =>
             clase.materia === sesionData.sesion.materia &&
@@ -495,10 +506,10 @@ const RegistroAsistencia = () => {
                       }`}
                     >
                       <div className="text-2xl font-black mb-1">
-                        {equipo.codigo_equipo.split("-").pop()}
+                        {equipo.codigo_equipo}
                       </div>
                       <div className="text-xs font-semibold">
-                        {equipo.codigo_equipo}
+                        {equipo.codigo_equipo.split('-').pop()}
                       </div>
                       <div className="text-xs mt-1 opacity-75">
                         {equipo.ocupado ? "Ocupado" : "Disponible"}

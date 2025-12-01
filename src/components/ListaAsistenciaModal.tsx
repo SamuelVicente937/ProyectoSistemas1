@@ -64,7 +64,7 @@ const ListaAsistenciaModal = ({
         </div>
 
         {/* Info de la sesión */}
-        <div className="bg-gradient-to-r from-[#767676] to-[#a00000] p-6 text-white">
+        <div className="bg-gradient-to-r from-[#a00000] to-[#767676] p-6 text-white">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm opacity-90 font-semibold">MATERIA</p>
