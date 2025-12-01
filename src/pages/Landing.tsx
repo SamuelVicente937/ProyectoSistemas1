@@ -541,8 +541,8 @@ const Landing = () => {
                   <div
                     className={`p-4 rounded-xl animate-pulse ${
                       submitMessage.type === "success"
-                        ? "bg-gray-50 text-[#a00000] border-2 border-[#a00000]"
-                        : "bg-red-50 text-red-800 border-2 border-red-200"
+                        ? "bg-[#a00000] text-white border-2 border-[#a00000]"
+                        : "bg-[#a00000] text-white border-2 border-[#a00000]"
                     }`}
                   >
                     {submitMessage.text}
