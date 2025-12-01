@@ -1,8 +1,6 @@
 import axios, { AxiosError } from "axios";
 import type { InternalAxiosRequestConfig, AxiosInstance } from "axios";
 
-console.log("🔍 VITE_API_URL:", import.meta.env.VITE_API_URL);
-console.log("🔍 Todas las env:", import.meta.env);
 const api: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
   headers: {
@@ -11,7 +9,7 @@ const api: AxiosInstance = axios.create({
   },
   withCredentials: true,
 });
-console.log('🔍 baseURL configurada:', api.defaults.baseURL);
+
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
