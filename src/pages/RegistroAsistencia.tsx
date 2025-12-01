@@ -1,6 +1,6 @@
 // src/pages/RegistroAsistencia.tsx
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Navbar, Footer } from "../components";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import { asistenciaService } from "../api/asistenciaService";
@@ -44,7 +44,7 @@ type TipoProblema = "hardware" | "software" | "red" | "otro";
 const RegistroAsistencia = () => {
   const { token } = useParams<{ token: string }>();
   //   const navigate = useNavigate();
-
+  const navigate = useNavigate();
   const [sesion, setSesion] = useState<SesionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -186,6 +186,7 @@ const RegistroAsistencia = () => {
     setTipoProblema("hardware");
     setProblemDescription("");
     setSuccessData(null);
+    navigate("/estudiante/dashboard");
   };
 
   if (loading) {
@@ -285,14 +286,12 @@ const RegistroAsistencia = () => {
               </div>
             )}
 
-            {asistenciaExistente.puede_editar && (
-              <div className="bg-red-100 border-l-4 border-[#a00000] rounded-lg p-4">
-                <p className="text-[#767676] font-semibold text-sm">
-                  <span className="font-black">NOTA:</span> Aún puedes editar tu
-                  observación mientras la sesión esté activa desde tu dashboard.
-                </p>
-              </div>
-            )}
+            <button
+              onClick={handleBackToForm}
+              className="w-full px-6 py-4 bg-[#a00000] text-white rounded-xl font-bold hover:bg-[#8a0000] transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
+            >
+              Volver al tu dashboard
+            </button>
           </div>
         </div>
         <Footer variant="simple" />
@@ -371,7 +370,7 @@ const RegistroAsistencia = () => {
               onClick={handleBackToForm}
               className="w-full px-6 py-4 bg-[#a00000] text-white rounded-xl font-bold hover:bg-[#8a0000] transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
             >
-              Volver al Formulario
+              Volver a tu dashboard
             </button>
           </div>
         </div>
@@ -509,7 +508,7 @@ const RegistroAsistencia = () => {
                         {equipo.codigo_equipo}
                       </div>
                       <div className="text-xs font-semibold">
-                        {equipo.codigo_equipo.split('-').pop()}
+                        {equipo.codigo_equipo.split("-").pop()}
                       </div>
                       <div className="text-xs mt-1 opacity-75">
                         {equipo.ocupado ? "Ocupado" : "Disponible"}

@@ -295,7 +295,7 @@ export default function EstudianteDashboard() {
             userCode={user.codigo_usuario}
             icon={GraduationCap}
           />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <StatCard
               icon={GraduationCap}
               title="Materias Inscritas"
@@ -308,15 +308,15 @@ export default function EstudianteDashboard() {
               title="Asistencias Registradas"
               value={estadisticas.asistencias_registradas}
               subtitle="Registradas"
-              variant="secondary"
+              variant="primary"
             />
-            <StatCard
+            {/* <StatCard
               icon={UserRoundCheck}
               title="Asistencia %"
               value={`${estadisticas.porcentaje_asistencia}%`}
               subtitle="Porcentaje de asistencia"
               variant="warning"
-            />
+            /> */}
           </div>
           <div className="bg-white rounded-2xl border-2 border-[#767676] p-8 mb-8 shadow-lg space-y-6">
             <div className="flex items-center gap-3 mb-8">
