@@ -4,10 +4,7 @@ import {
   BarChart,
   CheckCircle,
   ChevronDown,
-  Code2,
-  Cog,
   Lightbulb,
-  LightbulbIcon,
   Lock,
   Users,
 } from "lucide-react";
