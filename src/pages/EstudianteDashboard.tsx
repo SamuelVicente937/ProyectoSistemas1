@@ -13,7 +13,6 @@ import {
   MapPin,
   TrendingDown,
   TrendingUp,
-  UserRoundCheck,
   X,
   XCircle,
 } from "lucide-react";
