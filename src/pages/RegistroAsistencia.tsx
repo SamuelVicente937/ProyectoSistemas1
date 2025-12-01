@@ -180,12 +180,6 @@ const RegistroAsistencia = () => {
   };
 
   const handleBackToForm = () => {
-    setStage("form");
-    setSelectedEquipment(null);
-    setEquipmentState("operativo");
-    setTipoProblema("hardware");
-    setProblemDescription("");
-    setSuccessData(null);
     navigate("/estudiante/dashboard");
   };
 
