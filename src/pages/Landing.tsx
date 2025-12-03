@@ -361,13 +361,13 @@ const Landing = () => {
         </div>
       </section> */}
 
-      <section id="faq" className="pt-50 md:pt-50 pb-10 px-4 bg-gray-50">
+      <section id="faq" className="pt-50 md:pt-50 pb-7 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* FAQ Section */}
             <div>
               <div className="text-center lg:text-left mb-6">
-                <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-4">
+                <h2 className="text-4xl md:text-5xl font-bold text-[#767676] mb-3">
                   ¿Dónde <span className="text-[#a00000]">Encontrarnos?</span>
                 </h2>
                 <p className="text-lg text-[#767676]/80">
